@@ -3,8 +3,9 @@ package org.example.proyecto.Usuario.Domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.antlr.v4.runtime.misc.NotNull;
+import javax.validation.constraints.NotNull;
 import org.example.proyecto.Agreement.Domain.Agreement;
+
 
 import org.example.proyecto.Rating.Domain.Rating;
 
@@ -39,6 +40,7 @@ public class Usuario {
 
 
     @NotNull
+
     @Size(min = 7, max = 15, message = "El teléfono debe tener entre 7 y 15 dígitos")
     private String phone;
 
@@ -50,11 +52,14 @@ public class Usuario {
     @Size(max = 100, message = "La dirección no puede tener más de 100 caracteres")
     private String address;
 
-    @NotNull
+    @NotNull(message = "El rol no puede ser nulo")
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @NotNull
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Rating> ratingsReceived;
@@ -67,4 +72,14 @@ public class Usuario {
 
     @OneToMany(mappedBy = "recipient")
     private List<Agreement> receivedAgreements;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

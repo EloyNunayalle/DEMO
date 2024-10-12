@@ -25,7 +25,7 @@ public class ItemController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping
+    @PutMapping("/{itemId}")
     public ResponseEntity<ItemResponseDto> updateItem(@PathVariable Long itemId, @RequestBody ItemRequestDto requestDto) {
         ItemResponseDto updateItem = itemService.updateItem(itemId, requestDto);
         return ResponseEntity.ok(updateItem);
@@ -37,19 +37,24 @@ public class ItemController {
         return ResponseEntity.ok(item);
     }
 
-    @DeleteMapping("/{itemId")
+    @GetMapping
+    public ResponseEntity<List<ItemResponseDto>> getAllItems() {
+        return ResponseEntity.ok(itemService.getAllItems());
+    }
+
+    @DeleteMapping("/{itemId}")
     public ResponseEntity<ItemResponseDto> deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{categoryId}")
+    @GetMapping("/categoty/{categoryId}")
     public ResponseEntity<List<ItemResponseDto>> getItemByCategory(@PathVariable Long categoryId) {
         List<ItemResponseDto> items = itemService.getItemsByCategory(categoryId);
         return ResponseEntity.ok(items);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<ItemResponseDto>> getItemByUserId(@PathVariable Long userId) {
         List<ItemResponseDto> items = itemService.getItemsByUser(userId);
         return ResponseEntity.ok(items);

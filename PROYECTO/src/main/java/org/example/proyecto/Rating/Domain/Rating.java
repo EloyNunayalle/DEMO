@@ -18,8 +18,8 @@ public class Rating {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Usuario user;  // Usuario que está siendo calificado
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;  // Usuario que está siendo calificado
 
     @ManyToOne
     @JoinColumn(name = "rater_user_id")

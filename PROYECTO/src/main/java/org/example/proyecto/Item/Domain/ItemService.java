@@ -51,19 +51,18 @@ public class ItemService {
    }
 
     public ItemResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) {
-        // Buscar el ítem existente
+
         Item existingItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item no encontrado"));
 
-        // Obtener categoría por ID
+
         Category category = categoryRepository.findById(itemRequestDto.getCategory_id())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
-        // Obtener usuario por ID
         Usuario usuario = usuarioRepository.findById(itemRequestDto.getUser_id())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Mapear los valores del DTO a la entidad existente
+
         modelMapper.map(itemRequestDto, existingItem);
 
         // Establecer manualmente la categoría y el usuario si no están en el DTO

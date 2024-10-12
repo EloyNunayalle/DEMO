@@ -1,4 +1,7 @@
 package org.example.proyecto.Usuario.Infraestructure;
 
-public interface UsuarioRepository {
+import org.example.proyecto.Usuario.Domain.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UsuarioRepository extends JpaRepository<Usuario,Long> {
 }

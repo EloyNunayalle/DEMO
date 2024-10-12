@@ -4,15 +4,16 @@ package org.example.proyecto.Usuario.Domain;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
 import org.example.proyecto.Usuario.dto.UsuarioRequestDto;
 import org.example.proyecto.Usuario.dto.UsuarioResponseDto;
+import org.example.proyecto.event.UsuarioCreadoEvent;
 import org.example.proyecto.exception.InvalidUserFieldException;
 import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
 public class UsuarioService {
@@ -22,6 +23,9 @@ public class UsuarioService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     public UsuarioResponseDto registrarUsuario(UsuarioRequestDto requestDTO) {
         // Validar nombre
@@ -74,6 +78,8 @@ public class UsuarioService {
         usuario.setCreatedAt(LocalDateTime.now());
         usuario = usuarioRepository.save(usuario);
 
+        eventPublisher.publishEvent(new UsuarioCreadoEvent(this, usuario));
+
         return modelMapper.map(usuario, UsuarioResponseDto.class);
     }
 
@@ -106,3 +112,4 @@ public class UsuarioService {
         usuarioRepository.delete(usuario);
     }
 }
+

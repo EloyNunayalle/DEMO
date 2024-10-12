@@ -1,13 +1,12 @@
 package org.example.proyecto.Item.Domain;
 
 import org.example.proyecto.Category.Domain.Category;
-import org.example.proyecto.Category.Infraestructure.CategoryRepository;
+import org.example.proyecto.Category.Infrastructure.CategoryRepository;
 import org.example.proyecto.Item.Infraestructure.ItemRepository;
 import org.example.proyecto.Item.dto.ItemRequestDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
-import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,24 +45,22 @@ public class ItemService {
        item.setUsuario(user);
 
        Item savedItem = itemRepository.save(item);
-       ItemResponseDto responseDto = modelMapper.map(savedItem, ItemResponseDto.class);
-       responseDto.setCategoryName(savedItem.getCategory().getName());
-       responseDto.setUserName(savedItem.getUsuario().getEmail());
+
        //mapeamos la entidad guardada a un response y luego la retornamos
-       return responseDto;
+       return modelMapper.map(savedItem, ItemResponseDto.class);
    }
 
     public ItemResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) {
 
         Item existingItem = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
 
 
         Category category = categoryRepository.findById(itemRequestDto.getCategory_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
         Usuario usuario = usuarioRepository.findById(itemRequestDto.getUser_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
 
         modelMapper.map(itemRequestDto, existingItem);
@@ -74,65 +71,45 @@ public class ItemService {
 
         Item updatedItem = itemRepository.save(existingItem);
 
-        ItemResponseDto responseDto = modelMapper.map(updatedItem, ItemResponseDto.class);
-        responseDto.setCategoryName(updatedItem.getCategory().getName());
-        responseDto.setUserName(updatedItem.getUsuario().getEmail());
-
-        return responseDto;
+        // Devolver el ítem actualizado mapeado a ItemResponseDto
+        return modelMapper.map(updatedItem, ItemResponseDto.class);
     }
 
     public ItemResponseDto getItemById(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
 
-        ItemResponseDto responseDto = modelMapper.map(item, ItemResponseDto.class);
-        responseDto.setCategoryName(item.getCategory().getName());
-        responseDto.setUserName(item.getUsuario().getEmail());
-        return responseDto;
+        return modelMapper.map(item, ItemResponseDto.class);
     }
 
     public void deleteItem(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
         itemRepository.delete(item);
     }
 
     public List<ItemResponseDto> getAllItems() {
         List<Item> items = itemRepository.findAll();
 
+        // Mapear cada Item a ItemResponseDto
         return items.stream()
-                .map(item -> {
-                    ItemResponseDto responseDto = modelMapper.map(item, ItemResponseDto.class);
-                    responseDto.setCategoryName(item.getCategory().getName());  // Seteamos el nombre de la categoría
-                    responseDto.setUserName(item.getUsuario().getEmail());  // Seteamos el nombre (o email) del usuario
-                    return responseDto;
-                })
+                .map(item -> modelMapper.map(item, ItemResponseDto.class))
                 .collect(Collectors.toList());
     }
 
     public List<ItemResponseDto> getItemsByCategory(Long categoryId) {
         List<Item> items = itemRepository.findByCategoryId(categoryId);
-
         return items.stream()
-                .map(item -> {
-                    ItemResponseDto responseDto = modelMapper.map(item, ItemResponseDto.class);
-                    responseDto.setCategoryName(item.getCategory().getName());  // Seteamos el nombre de la categoría
-                    responseDto.setUserName(item.getUsuario().getEmail());  // Seteamos el nombre (o email) del usuario
-                    return responseDto;
-                })
+                .map(item -> modelMapper.map(item, ItemResponseDto.class))
                 .collect(Collectors.toList());
     }
+
 
     public List<ItemResponseDto> getItemsByUser(Long userId) {
         List<Item> items = itemRepository.findByUsuarioId(userId);
-
         return items.stream()
-                .map(item -> {
-                    ItemResponseDto responseDto = modelMapper.map(item, ItemResponseDto.class);
-                    responseDto.setCategoryName(item.getCategory().getName());  // Seteamos el nombre de la categoría
-                    responseDto.setUserName(item.getUsuario().getEmail());  // Seteamos el nombre (o email) del usuario
-                    return responseDto;
-                })
+                .map(item -> modelMapper.map(item, ItemResponseDto.class))
                 .collect(Collectors.toList());
     }
+
 }

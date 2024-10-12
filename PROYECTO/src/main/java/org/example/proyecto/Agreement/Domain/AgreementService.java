@@ -2,7 +2,7 @@ package org.example.proyecto.Agreement.Domain;
 
 import org.example.proyecto.Agreement.Dto.AgreementRequestDto;
 import org.example.proyecto.Agreement.Dto.AgreementResponseDto;
-import org.example.proyecto.Agreement.Infraestructure.AgreementRepository;
+import org.example.proyecto.Agreement.Infrastructure.AgreementRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

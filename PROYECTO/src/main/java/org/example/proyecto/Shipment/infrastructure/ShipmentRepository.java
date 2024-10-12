@@ -1,4 +1,4 @@
-package org.example.proyecto.Shipment.Infraestructure;
+package org.example.proyecto.Shipment.infrastructure;
 
 import org.example.proyecto.Shipment.Domain.Shipment;
 import org.springframework.data.jpa.repository.JpaRepository;

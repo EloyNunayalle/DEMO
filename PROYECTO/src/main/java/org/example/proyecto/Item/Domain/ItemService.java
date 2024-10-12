@@ -1,12 +1,13 @@
 package org.example.proyecto.Item.Domain;
 
 import org.example.proyecto.Category.Domain.Category;
-import org.example.proyecto.Category.Infraestructure.CategoryRepository;
+import org.example.proyecto.Category.Infrastructure.CategoryRepository;
 import org.example.proyecto.Item.Infraestructure.ItemRepository;
 import org.example.proyecto.Item.dto.ItemRequestDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
+import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,37 +31,42 @@ public class ItemService {
         this.usuarioRepository = usuarioRepository;
     }
 
-   public ItemResponseDto createItem(ItemRequestDto itemDto) {
-       Category category = categoryRepository.findById(itemDto.getCategory_id())
-               .orElseThrow(() -> new RuntimeException("Categoria no encontrado"));
+    public ItemResponseDto createItem(ItemRequestDto itemDto) {
+        Category category = categoryRepository.findById(itemDto.getCategory_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrado"));
 
-       Usuario user = usuarioRepository.findById(itemDto.getUser_id())
-               .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario user = usuarioRepository.findById(itemDto.getUser_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-       //mapeamos de itemDto a item
-       Item item = modelMapper.map(itemDto, Item.class);
+        //mapeamos de itemDto a item
+        Item item = modelMapper.map(itemDto, Item.class);
 
-       // Agregamos la categoria y user que no estaban en el dto
-       item.setCategory(category);
-       item.setUsuario(user);
+        // Agregamos la categoria y user que no estaban en el dto
+        item.setCategory(category);
+        item.setUsuario(user);
 
-       Item savedItem = itemRepository.save(item);
+        Item savedItem = itemRepository.save(item);
 
-       //mapeamos la entidad guardada a un response y luego la retornamos
-       return modelMapper.map(savedItem, ItemResponseDto.class);
-   }
+        //mapeamos la entidad guardada a un response y luego la retornamos
+        ItemResponseDto responseDto= modelMapper.map(savedItem, ItemResponseDto.class);
+
+        responseDto.setUserName(item.getUsuario().getEmail());
+        responseDto.setCategoryName(item.getCategory().getName());
+
+        return responseDto;
+    }
 
     public ItemResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) {
 
         Item existingItem = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
 
 
         Category category = categoryRepository.findById(itemRequestDto.getCategory_id())
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
         Usuario usuario = usuarioRepository.findById(itemRequestDto.getUser_id())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
 
         modelMapper.map(itemRequestDto, existingItem);
@@ -71,20 +77,24 @@ public class ItemService {
 
         Item updatedItem = itemRepository.save(existingItem);
 
-        // Devolver el ítem actualizado mapeado a ItemResponseDto
-        return modelMapper.map(updatedItem, ItemResponseDto.class);
+        ItemResponseDto responseDto= modelMapper.map(updatedItem, ItemResponseDto.class);
+
+        responseDto.setUserName(updatedItem.getUsuario().getEmail());
+        responseDto.setCategoryName(updatedItem.getCategory().getName());
+
+        return responseDto;
     }
 
     public ItemResponseDto getItemById(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
 
         return modelMapper.map(item, ItemResponseDto.class);
     }
 
     public void deleteItem(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
         itemRepository.delete(item);
     }
 

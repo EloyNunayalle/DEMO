@@ -19,10 +19,10 @@ import java.util.List;
 @Setter
 @Entity
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @NotBlank(message = "El nombre no puede estar vacío")
     @Size(max = 50, message = "El nombre no puede tener más de 50 caracteres")
@@ -51,26 +51,20 @@ public class Usuario {
     private String address;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
     private Role role;
 
     @NotNull
     private LocalDateTime createdAt;
 
-    public enum Role {
-        ADMIN, PIDE, DA
-    }
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<Rating> ratingsReceived;
 
-    @OneToMany(mappedBy = "raterUser", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "raterUsuario", cascade = CascadeType.ALL)
     private List<Rating> ratingsGiven;
 
-    @OneToMany(mappedBy = "usuario_ini")
+    @OneToMany(mappedBy = "initiator")
     private List<Agreement> initiatedAgreements;
 
-    @OneToMany(mappedBy = "usuario_fin")
+    @OneToMany(mappedBy = "recipient")
     private List<Agreement> receivedAgreements;
-
 }

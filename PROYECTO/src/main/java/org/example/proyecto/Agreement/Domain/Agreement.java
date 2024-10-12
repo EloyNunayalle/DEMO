@@ -44,9 +44,9 @@ public class Agreement {
 
     @ManyToOne
     @NotNull(message = "El usuario iniciador no puede ser nulo")
-    private Usuario usuario_ini;
+    private Usuario initiator;
 
     @ManyToOne
     @NotNull(message = "El usuario receptor no puede ser nulo")
-    private Usuario usuario_fin;
+    private Usuario recipient;
 }

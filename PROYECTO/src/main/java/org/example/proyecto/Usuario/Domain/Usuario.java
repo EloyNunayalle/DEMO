@@ -51,6 +51,7 @@ public class Usuario {
     private String address;
 
     @NotNull
+    @Enumerated
     private Role role;
 
     @NotNull

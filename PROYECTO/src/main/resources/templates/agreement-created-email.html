@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Acuerdo Creado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        p {
+            color: #333333;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>¡Nuevo Acuerdo Creado!</h1>
+    <p>Hola,</p>
+    <p>Un nuevo acuerdo ha sido creado en MarketExchange.</p>
+    <p><strong>Objeto ofrecido por el iniciador:</strong> <span th:text="${itemIniName}">Nombre del objeto inicial</span></p>
+    <p><strong>Objeto ofrecido por el receptor:</strong> <span th:text="${itemFinName}">Nombre del objeto final</span></p>
+    <p>Por favor, visita <a href="https://marketexchange.com">MarketExchange</a> para más detalles.</p>
+</div>
+</body>
+</html>

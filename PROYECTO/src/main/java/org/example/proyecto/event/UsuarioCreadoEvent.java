@@ -4,6 +4,10 @@ import lombok.Getter;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.springframework.context.ApplicationEvent;
 
+
+
+
+
 @Getter
 public class UsuarioCreadoEvent extends ApplicationEvent {
 

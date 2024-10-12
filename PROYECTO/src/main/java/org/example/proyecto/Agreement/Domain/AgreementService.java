@@ -11,9 +11,11 @@ import org.example.proyecto.Item.Infraestructure.ItemRepository;
 import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
+import org.example.proyecto.event.AgreementCreadoEvent;
 import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +35,10 @@ public class AgreementService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
 
     public List<AgreementResponseDto> getAllAgreements() {
 
@@ -78,6 +84,10 @@ public class AgreementService {
 
         // Guardar el acuerdo en la base de datos
         Agreement savedAgreement = agreementRepository.save(agreement);
+
+        // Publicar el evento de creación del acuerdo
+        eventPublisher.publishEvent(new AgreementCreadoEvent(this, savedAgreement));
+
 
         // Crear y retornar el DTO manualmente asignando los IDs
         AgreementResponseDto responseDto = new AgreementResponseDto();

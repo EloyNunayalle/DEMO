@@ -9,24 +9,27 @@ import org.example.proyecto.Usuario.Domain.Usuario;
 import java.time.LocalDateTime;
 
 
+
 @Getter
 @Setter
 @Entity
 public class Rating {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Usuario usuario;  // Usuario que está siendo calificado
-
-    @ManyToOne
-    @JoinColumn(name = "rater_user_id")
-    private Usuario raterUsuario;  // Usuario que realiza la calificación
+    private Long id;
 
     private int rating;
-    private String comment;
-    private LocalDateTime createdAt;
 
+    private String comment;
+
+    // El usuario que da la calificación
+    @ManyToOne
+    @JoinColumn(name = "rater_usuario_id")
+    private Usuario raterUsuario;
+
+    // El usuario que recibe la calificación
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
 }

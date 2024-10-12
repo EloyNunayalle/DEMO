@@ -4,6 +4,8 @@ import org.example.proyecto.Agreement.Domain.AgreementService;
 import org.example.proyecto.Agreement.Dto.AgreementRequestDto;
 import org.example.proyecto.Agreement.Dto.AgreementResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,27 +19,32 @@ public class AgreementController {
     private AgreementService agreementService;
 
     @GetMapping
-    public List<AgreementResponseDto> getAllAgreements() {
-        return agreementService.getAllAgreements();
+    public ResponseEntity<List<AgreementResponseDto>>  getAllAgreements() {
+
+        return ResponseEntity.ok(agreementService.getAllAgreements());
     }
 
     @PostMapping
-    public AgreementResponseDto createAgreement(@Valid @RequestBody AgreementRequestDto agreementRequestDto) {
-        return agreementService.createAgreement(agreementRequestDto);
+    public ResponseEntity<AgreementResponseDto> createAgreement(@Valid @RequestBody AgreementRequestDto agreementRequestDto) {
+        AgreementResponseDto responseDto = agreementService.createAgreement(agreementRequestDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public AgreementResponseDto getAgreementById(@PathVariable Long id) {
-        return agreementService.getAgreementById(id);
+    public ResponseEntity<AgreementResponseDto> getAgreementById(@PathVariable Long id) {
+        AgreementResponseDto responseDto = agreementService.getAgreementById(id);
+        return ResponseEntity.ok(responseDto);
     }
 
     @PutMapping("/{id}")
-    public AgreementResponseDto updateAgreement(@PathVariable Long id, @Valid @RequestBody AgreementRequestDto agreementRequestDto) {
-        return agreementService.updateAgreement(id, agreementRequestDto);
+    public ResponseEntity<AgreementResponseDto> updateAgreement(@PathVariable Long id, @Valid @RequestBody AgreementRequestDto agreementRequestDto) {
+        AgreementResponseDto responseDto = agreementService.updateAgreement(id, agreementRequestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAgreement(@PathVariable Long id) {
+    public ResponseEntity<AgreementResponseDto> deleteAgreement(@PathVariable Long id) {
         agreementService.deleteAgreement(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -54,6 +54,7 @@ public class CategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         modelMapper.map(categoryUpdate, category);
         categoryRepository.save(category);
+
         return modelMapper.map(category, CategoryResponseDto.class);
     }
 

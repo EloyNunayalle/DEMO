@@ -3,6 +3,7 @@ package org.example.proyecto.Agreement.Dto;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.proyecto.Agreement.Domain.Agreement;
+import org.example.proyecto.Agreement.Domain.Status;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -13,10 +14,8 @@ import java.time.LocalDateTime;
 public class AgreementRequestDto {
 
     @NotNull(message = "El estado no puede ser nulo")
-    private Agreement.Status status;
+    private Status status;
 
-    @NotNull(message = "La fecha de intercambio no puede ser nula")
-    private LocalDateTime tradeDate;
 
     @NotNull(message = "El objeto ofrecido por el iniciador no puede ser nulo")
     private Long itemIniId;

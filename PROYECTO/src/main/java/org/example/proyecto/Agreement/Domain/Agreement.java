@@ -27,9 +27,6 @@ public class Agreement {
     @NotNull(message = "La fecha de intercambio no puede ser nula")
     private LocalDateTime tradeDate;
 
-    public enum Status {
-        PENDING, ACCEPTED, REJECTED
-    }
 
     @OneToOne(mappedBy = "agreement", cascade = CascadeType.ALL)
     private Shipment shipment;
@@ -49,4 +46,9 @@ public class Agreement {
     @ManyToOne
     @NotNull(message = "El usuario receptor no puede ser nulo")
     private Usuario recipient;
+
+    @PrePersist
+    protected void onCreate() {
+        this.tradeDate = LocalDateTime.now();
+    }
 }

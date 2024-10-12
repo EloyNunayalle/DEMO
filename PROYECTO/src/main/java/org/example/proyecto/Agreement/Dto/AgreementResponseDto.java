@@ -10,11 +10,11 @@
     @Getter
     @Setter
     public class AgreementResponseDto {
-        private int id;
+        private Long id;
         private Agreement.Status status;
         private LocalDateTime tradeDate;
-        private int itemIniId;
-        private int itemFinId;
-        private int usuarioIniId;
-        private int usuarioFinId;
+        private Long itemIniId;
+        private Long itemFinId;
+        private Long usuarioIniId;
+        private Long usuarioFinId;
     }

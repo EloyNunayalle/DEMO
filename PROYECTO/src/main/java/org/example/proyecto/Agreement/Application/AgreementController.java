@@ -27,17 +27,17 @@ public class AgreementController {
     }
 
     @GetMapping("/{id}")
-    public AgreementResponseDto getAgreementById(@PathVariable int id) {
+    public AgreementResponseDto getAgreementById(@PathVariable Long id) {
         return agreementService.getAgreementById(id);
     }
 
     @PutMapping("/{id}")
-    public AgreementResponseDto updateAgreement(@PathVariable int id, @Valid @RequestBody AgreementRequestDto agreementRequestDto) {
+    public AgreementResponseDto updateAgreement(@PathVariable Long id, @Valid @RequestBody AgreementRequestDto agreementRequestDto) {
         return agreementService.updateAgreement(id, agreementRequestDto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAgreement(@PathVariable int id) {
+    public void deleteAgreement(@PathVariable Long id) {
         agreementService.deleteAgreement(id);
     }
 }

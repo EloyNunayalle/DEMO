@@ -64,17 +64,40 @@ public class AgreementService {
         agreement.setStatus(agreementRequestDto.getStatus());
         agreement.setTradeDate(agreementRequestDto.getTradeDate());
 
+        // Guardar el acuerdo en la base de datos
         Agreement savedAgreement = agreementRepository.save(agreement);
-        return modelMapper.map(savedAgreement, AgreementResponseDto.class);
+
+        // Crear y retornar el DTO manualmente asignando los IDs
+        AgreementResponseDto responseDto = new AgreementResponseDto();
+        responseDto.setId(savedAgreement.getId());
+        responseDto.setStatus(savedAgreement.getStatus());
+        responseDto.setTradeDate(savedAgreement.getTradeDate());
+        responseDto.setItemIniId(savedAgreement.getItem_ini().getId());
+        responseDto.setItemFinId(savedAgreement.getItem_fin().getId());
+        responseDto.setUsuarioIniId(savedAgreement.getInitiator().getId());
+        responseDto.setUsuarioFinId(savedAgreement.getRecipient().getId());
+
+        return responseDto;
     }
 
-    public AgreementResponseDto getAgreementById(int id) {
+    public AgreementResponseDto getAgreementById(Long id) {
         Agreement agreement = agreementRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Agreement not found"));
-        return modelMapper.map(agreement, AgreementResponseDto.class);
+
+        // Crear y retornar el DTO manualmente asignando los IDs
+        AgreementResponseDto responseDto = new AgreementResponseDto();
+        responseDto.setId(agreement.getId());
+        responseDto.setStatus(agreement.getStatus());
+        responseDto.setTradeDate(agreement.getTradeDate());
+        responseDto.setItemIniId(agreement.getItem_ini().getId());
+        responseDto.setItemFinId(agreement.getItem_fin().getId());
+        responseDto.setUsuarioIniId(agreement.getInitiator().getId());
+        responseDto.setUsuarioFinId(agreement.getRecipient().getId());
+
+        return responseDto;
     }
 
-    public AgreementResponseDto updateAgreement(int id, AgreementRequestDto agreementRequestDto) {
+    public AgreementResponseDto updateAgreement(Long id, AgreementRequestDto agreementRequestDto) {
         Agreement existingAgreement = agreementRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Agreement not found"));
         mapRequestDtoToAgreement(agreementRequestDto, existingAgreement);
@@ -82,7 +105,7 @@ public class AgreementService {
         return modelMapper.map(updatedAgreement, AgreementResponseDto.class);
     }
 
-    public void deleteAgreement(int id) {
+    public void deleteAgreement(Long id) {
         agreementRepository.deleteById(id);
     }
 

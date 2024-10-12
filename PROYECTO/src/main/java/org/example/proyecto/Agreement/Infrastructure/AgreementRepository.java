@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AgreementRepository extends JpaRepository<Agreement, Integer> {
+public interface AgreementRepository extends JpaRepository<Agreement, Long> {
 
     List<Agreement> findByStatus(Agreement.Status status);
 }

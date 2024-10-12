@@ -19,11 +19,9 @@ import java.util.List;
 @Setter
 @Entity
 public class Usuario {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
+    private Long id;
 
 
     @NotBlank(message = "El nombre no puede estar vacío")
@@ -69,9 +67,10 @@ public class Usuario {
     @OneToMany(mappedBy = "raterUser", cascade = CascadeType.ALL)
     private List<Rating> ratingsGiven;
 
-    @OneToMany(mappedBy = "initiator")
+    @OneToMany(mappedBy = "usuario_ini")
     private List<Agreement> initiatedAgreements;
 
-    @OneToMany(mappedBy = "recipient")
+    @OneToMany(mappedBy = "usuario_fin")
     private List<Agreement> receivedAgreements;
+
 }

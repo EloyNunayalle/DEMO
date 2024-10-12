@@ -1,10 +1,10 @@
-package org.example.proyecto.Item.Domain;
-
-import jakarta.persistence.*;
+package org.example.proyecto.Item.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.example.proyecto.Category.Domain.Category;
+import org.example.proyecto.Item.Domain.Condition;
+import org.example.proyecto.Item.Domain.Item;
 import org.example.proyecto.Usuario.Domain.Usuario;
 
 import javax.validation.constraints.NotBlank;
@@ -13,33 +13,25 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity
-public class Item {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NotBlank
+public class ItemRequestDto {
+    @NotBlank(message = "El nombre no puede estar vacio")
     private String name;
 
     @NotBlank
     private String description;
 
     @NotNull
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    private Long category_id;
 
-
-    @Enumerated(EnumType.STRING)
-    private Condition condition;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Usuario usuario;
+    @NotNull
+    private Long user_id;
 
     @NotNull
     private LocalDateTime createdAt;
+
+    @NotNull
+    private Condition condition;
+
 
 
 }

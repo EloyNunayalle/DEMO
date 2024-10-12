@@ -18,7 +18,7 @@ public class Agreement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @NotNull(message = "El estado no puede ser nulo")
     @Enumerated(EnumType.STRING)

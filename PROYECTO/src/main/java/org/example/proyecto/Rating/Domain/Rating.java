@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Usuario usuario;  // Usuario que está siendo calificado
+    private Usuario user;  // Usuario que está siendo calificado
 
     @ManyToOne
     @JoinColumn(name = "rater_user_id")

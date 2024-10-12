@@ -1,4 +1,4 @@
-package org.example.proyecto.Agreement.Infraestructure;
+package org.example.proyecto.Agreement.Infrastructure;
 
 
 import org.example.proyecto.Agreement.Domain.Agreement;

@@ -1,6 +1,6 @@
 package org.example.proyecto.Category.Domain;
 
-import org.example.proyecto.Category.Infraestructure.CategoryRepository;
+import org.example.proyecto.Category.Infrastructure.CategoryRepository;
 import org.example.proyecto.Category.dto.CategoryRequestDto;
 import org.example.proyecto.Category.dto.CategoryResponseDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;

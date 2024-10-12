@@ -1,12 +1,12 @@
 package org.example.proyecto.Item.Domain;
 
 import org.example.proyecto.Category.Domain.Category;
-import org.example.proyecto.Category.Infraestructure.CategoryRepository;
+import org.example.proyecto.Category.Infrastructure.CategoryRepository;
 import org.example.proyecto.Item.Infraestructure.ItemRepository;
 import org.example.proyecto.Item.dto.ItemRequestDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
-import org.example.proyecto.Usuario.Infraestructure.UsuarioRepository;
+import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

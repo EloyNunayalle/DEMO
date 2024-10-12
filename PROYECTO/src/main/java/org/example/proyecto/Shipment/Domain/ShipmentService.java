@@ -1,10 +1,10 @@
 package org.example.proyecto.Shipment.Domain;
 
 import org.example.proyecto.Agreement.Domain.Agreement;
-import org.example.proyecto.Agreement.Infraestructure.AgreementRepository;
+import org.example.proyecto.Agreement.Infrastructure.AgreementRepository;
 import org.example.proyecto.Shipment.Dto.ShipmentRequestDto;
 import org.example.proyecto.Shipment.Dto.ShipmentResponseDto;
-import org.example.proyecto.Shipment.Infraestructure.ShipmentRepository;
+import org.example.proyecto.Shipment.infrastructure.ShipmentRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,4 +64,5 @@ public class ShipmentService {
                 .orElseThrow(() -> new RuntimeException("Agreement not found"));
         shipment.setAgreement(agreement);
     }
+
 }

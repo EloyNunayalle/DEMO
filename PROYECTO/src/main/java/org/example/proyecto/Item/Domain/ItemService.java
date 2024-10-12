@@ -89,7 +89,13 @@ public class ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
 
-        return modelMapper.map(item, ItemResponseDto.class);
+
+        ItemResponseDto responseDto= modelMapper.map(item, ItemResponseDto.class);
+
+        responseDto.setUserName(item.getUsuario().getEmail());
+        responseDto.setCategoryName(item.getCategory().getName());
+
+        return responseDto;
     }
 
     public void deleteItem(Long itemId) {
@@ -101,24 +107,40 @@ public class ItemService {
     public List<ItemResponseDto> getAllItems() {
         List<Item> items = itemRepository.findAll();
 
-        // Mapear cada Item a ItemResponseDto
+        // Mapear cada Item a ItemResponseDto con atributos adicionales
         return items.stream()
-                .map(item -> modelMapper.map(item, ItemResponseDto.class))
+                .map(item -> {
+                    ItemResponseDto responseDto = modelMapper.map(item, ItemResponseDto.class);
+                    responseDto.setCategoryName(item.getCategory().getName());  // Seteamos el nombre de la categoría
+                    responseDto.setUserName(item.getUsuario().getEmail());  // Seteamos el nombre (o email) del usuario
+                    return responseDto;
+                })
                 .collect(Collectors.toList());
     }
 
     public List<ItemResponseDto> getItemsByCategory(Long categoryId) {
         List<Item> items = itemRepository.findByCategoryId(categoryId);
+
         return items.stream()
-                .map(item -> modelMapper.map(item, ItemResponseDto.class))
+                .map(item -> {
+                    ItemResponseDto responseDto = modelMapper.map(item, ItemResponseDto.class);
+                    responseDto.setCategoryName(item.getCategory().getName());  // Seteamos el nombre de la categoría
+                    responseDto.setUserName(item.getUsuario().getEmail());  // Seteamos el nombre (o email) del usuario
+                    return responseDto;
+                })
                 .collect(Collectors.toList());
     }
 
-
     public List<ItemResponseDto> getItemsByUser(Long userId) {
         List<Item> items = itemRepository.findByUsuarioId(userId);
+
         return items.stream()
-                .map(item -> modelMapper.map(item, ItemResponseDto.class))
+                .map(item -> {
+                    ItemResponseDto responseDto = modelMapper.map(item, ItemResponseDto.class);
+                    responseDto.setCategoryName(item.getCategory().getName());  // Seteamos el nombre de la categoría
+                    responseDto.setUserName(item.getUsuario().getEmail());  // Seteamos el nombre (o email) del usuario
+                    return responseDto;
+                })
                 .collect(Collectors.toList());
     }
 

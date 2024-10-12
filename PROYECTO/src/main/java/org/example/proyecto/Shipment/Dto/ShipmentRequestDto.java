@@ -20,5 +20,5 @@ public class ShipmentRequestDto {
     private LocalDateTime deliveryDate;
 
     @NotNull(message = "El acuerdo no puede ser nulo")
-    private int agreementId;
+    private Long agreementId;
 }

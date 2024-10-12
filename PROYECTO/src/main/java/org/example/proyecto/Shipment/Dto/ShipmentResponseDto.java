@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 @Setter
 public class ShipmentResponseDto {
 
-    private int id;
+    private Long id;
     private String initiatorAddress;
     private String receiveAddress;
     private LocalDateTime deliveryDate;
-    private int agreementId;
+    private Long agreementId;
 }

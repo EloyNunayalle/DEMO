@@ -26,8 +26,6 @@ public class ItemRequestDto {
     @NotNull
     private Long user_id;
 
-    @NotNull
-    private LocalDateTime createdAt;
 
     @NotNull
     private Condition condition;

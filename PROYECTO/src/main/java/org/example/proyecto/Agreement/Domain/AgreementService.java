@@ -3,10 +3,6 @@ package org.example.proyecto.Agreement.Domain;
 import org.example.proyecto.Agreement.Dto.AgreementRequestDto;
 import org.example.proyecto.Agreement.Dto.AgreementResponseDto;
 import org.example.proyecto.Agreement.Infraestructure.AgreementRepository;
-import org.example.proyecto.Item.Domain.Item;
-
-import org.example.proyecto.Usuario.Domain.Usuario;
-import org.example.proyecto.Usuario.Infraestructure.UsuarioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

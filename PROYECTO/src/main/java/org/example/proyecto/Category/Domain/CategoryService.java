@@ -4,6 +4,7 @@ import org.example.proyecto.Category.Infraestructure.CategoryRepository;
 import org.example.proyecto.Category.dto.CategoryRequestDto;
 import org.example.proyecto.Category.dto.CategoryResponseDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;
+import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,8 @@ public class CategoryService {
     }
 
     public CategoryResponseDto getCategoryById(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         CategoryResponseDto categoryResponseDto = modelMapper.map(category, CategoryResponseDto.class);
 
@@ -48,7 +50,8 @@ public class CategoryService {
     }
 
     public CategoryResponseDto updateCategory(Long id, CategoryRequestDto categoryUpdate) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         modelMapper.map(categoryUpdate, category);
         categoryRepository.save(category);
         return modelMapper.map(category, CategoryResponseDto.class);

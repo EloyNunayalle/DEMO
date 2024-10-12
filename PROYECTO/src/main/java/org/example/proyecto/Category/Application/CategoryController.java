@@ -3,6 +3,7 @@ package org.example.proyecto.Category.Application;
 import org.example.proyecto.Category.Domain.CategoryService;
 import org.example.proyecto.Category.dto.CategoryRequestDto;
 import org.example.proyecto.Category.dto.CategoryResponseDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<CategoryResponseDto> createCategory(@RequestBody CategoryRequestDto createCategoryDTO) {
         CategoryResponseDto category = categoryService.createCategory(createCategoryDTO);
-        return ResponseEntity.ok(category);
+        return new ResponseEntity<>(category, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

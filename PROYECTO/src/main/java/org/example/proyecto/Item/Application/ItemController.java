@@ -4,6 +4,7 @@ import org.example.proyecto.Item.Domain.ItemService;
 import org.example.proyecto.Item.dto.ItemRequestDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<ItemResponseDto> createItem(@RequestBody ItemRequestDto requestDto) {
         ItemResponseDto responseDto = itemService.createItem(requestDto);
-        return ResponseEntity.ok(responseDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @PutMapping("/{itemId}")
@@ -48,7 +49,7 @@ public class ItemController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/categoty/{categoryId}")
+    @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<ItemResponseDto>> getItemByCategory(@PathVariable Long categoryId) {
         List<ItemResponseDto> items = itemService.getItemsByCategory(categoryId);
         return ResponseEntity.ok(items);

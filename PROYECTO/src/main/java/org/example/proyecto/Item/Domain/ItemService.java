@@ -7,6 +7,7 @@ import org.example.proyecto.Item.dto.ItemRequestDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
+import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,14 +56,14 @@ public class ItemService {
     public ItemResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) {
 
         Item existingItem = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
 
 
         Category category = categoryRepository.findById(itemRequestDto.getCategory_id())
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
         Usuario usuario = usuarioRepository.findById(itemRequestDto.getUser_id())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
 
         modelMapper.map(itemRequestDto, existingItem);
@@ -82,7 +83,7 @@ public class ItemService {
 
     public ItemResponseDto getItemById(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
 
         ItemResponseDto responseDto = modelMapper.map(item, ItemResponseDto.class);
         responseDto.setCategoryName(item.getCategory().getName());
@@ -92,7 +93,7 @@ public class ItemService {
 
     public void deleteItem(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Item no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Item no encontrado"));
         itemRepository.delete(item);
     }
 

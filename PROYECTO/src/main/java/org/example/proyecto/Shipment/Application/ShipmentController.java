@@ -1,8 +1,12 @@
 package org.example.proyecto.Shipment.Application;
-
+import org.example.proyecto.Category.Domain.Category;
+import org.example.proyecto.Item.Domain.Item;
+import org.example.proyecto.Item.dto.ItemRequestDto;
+import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Shipment.Domain.ShipmentService;
 import org.example.proyecto.Shipment.Dto.ShipmentRequestDto;
 import org.example.proyecto.Shipment.Dto.ShipmentResponseDto;
+import org.example.proyecto.Usuario.Domain.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

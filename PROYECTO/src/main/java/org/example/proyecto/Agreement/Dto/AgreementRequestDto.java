@@ -19,15 +19,14 @@ public class AgreementRequestDto {
     private LocalDateTime tradeDate;
 
     @NotNull(message = "El objeto ofrecido por el iniciador no puede ser nulo")
-    private int itemIniId;
+    private Long itemIniId;
 
     @NotNull(message = "El objeto ofrecido por el receptor no puede ser nulo")
-    private int itemFinId;
+    private Long itemFinId;
 
     @NotNull(message = "El usuario iniciador no puede ser nulo")
-    private int usuarioIniId;
+    private Long usuarioIniId;
 
     @NotNull(message = "El usuario receptor no puede ser nulo")
-    private int usuarioFinId;
-
+    private Long usuarioFinId;
 }

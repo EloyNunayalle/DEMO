@@ -5,8 +5,9 @@ import org.example.proyecto.Agreement.Dto.AgreementResponseDto;
 import org.example.proyecto.Agreement.Infraestructure.AgreementRepository;
 import org.example.proyecto.Item.Domain.Item;
 
+import org.example.proyecto.Item.Infraestructure.ItemRepository;
 import org.example.proyecto.Usuario.Domain.Usuario;
-import org.example.proyecto.Usuario.Infraestructure.UsuarioRepository;
+import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class AgreementService {
+
+    @Autowired
+    private ItemRepository itemRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private AgreementRepository agreementRepository;
@@ -31,7 +38,30 @@ public class AgreementService {
 
     public AgreementResponseDto createAgreement(AgreementRequestDto agreementRequestDto) {
         Agreement agreement = new Agreement();
-        mapRequestDtoToAgreement(agreementRequestDto, agreement);
+
+        // Cargar los objetos Item y Usuario utilizando sus identificadores
+        Item itemIni = itemRepository.findById(agreementRequestDto.getItemIniId())
+                .orElseThrow(() -> new RuntimeException("Item inicial no encontrado"));
+
+        Item itemFin = itemRepository.findById(agreementRequestDto.getItemFinId())
+                .orElseThrow(() -> new RuntimeException("Item final no encontrado"));
+
+        Usuario usuarioIni = usuarioRepository.findById(agreementRequestDto.getUsuarioIniId())
+                .orElseThrow(() -> new RuntimeException("Usuario iniciador no encontrado"));
+
+        Usuario usuarioFin = usuarioRepository.findById(agreementRequestDto.getUsuarioFinId())
+                .orElseThrow(() -> new RuntimeException("Usuario receptor no encontrado"));
+
+        // Asignar los objetos cargados al acuerdo
+        agreement.setItem_ini(itemIni);
+        agreement.setItem_fin(itemFin);
+        agreement.setInitiator(usuarioIni);
+        agreement.setRecipient(usuarioFin);
+
+        // Asignar el estado y la fecha de intercambio
+        agreement.setStatus(agreementRequestDto.getStatus());
+        agreement.setTradeDate(agreementRequestDto.getTradeDate());
+
         Agreement savedAgreement = agreementRepository.save(agreement);
         return modelMapper.map(savedAgreement, AgreementResponseDto.class);
     }

@@ -41,7 +41,7 @@ public class Usuario {
 
 
     @NotNull
-    
+    @Pattern(regexp = "^\\+?[0-9. ()-]{7,15}$", message = "El teléfono debe tener un formato válido")
     @Size(min = 7, max = 15, message = "El teléfono debe tener entre 7 y 15 dígitos")
     private String phone;
 

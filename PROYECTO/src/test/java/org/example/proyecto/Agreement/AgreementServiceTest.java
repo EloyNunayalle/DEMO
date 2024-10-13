@@ -115,9 +115,61 @@ public class AgreementServiceTest {
         verify(eventPublisher, times(1)).publishEvent(any(AgreementCreadoEvent.class));
     }
 
-
     @Test
     public void testGetAgreementById_Success() {
+        // Configuración del Agreement
+        Agreement agreement = new Agreement();
+        agreement.setId(1L);  // Asegúrate de que el id esté configurado correctamente
+        agreement.setState(State.PENDING);
+
+        // Mock Items
+        Item itemIni = new Item();
+        itemIni.setId(1L);
+        itemIni.setName("Item Inicial");
+
+        Item itemFin = new Item();
+        itemFin.setId(2L);
+        itemFin.setName("Item Final");
+
+        // Mock Usuarios
+        Usuario initiator = new Usuario();
+        initiator.setId(1L);
+        initiator.setEmail("initiator@example.com");
+
+        Usuario recipient = new Usuario();
+        recipient.setId(2L);
+        recipient.setEmail("recipient@example.com");
+
+        // Asignar Items y Usuarios al Agreement
+        agreement.setItem_ini(itemIni);
+        agreement.setItem_fin(itemFin);
+        agreement.setInitiator(initiator);
+        agreement.setRecipient(recipient);
+
+        // Mockear el comportamiento del repository
+        when(agreementRepository.findById(1L)).thenReturn(Optional.of(agreement));
+
+        // Llamar al servicio
+        AgreementResponseDto result = agreementService.getAgreementById(1L);
+
+        // Verificar el resultado esperado
+        assertNotNull(result);  // Asegúrate de que no sea null
+        assertEquals(1L, result.getId());  // Verificar que el id sea el esperado
+        assertEquals(State.PENDING, result.getState());
+        assertEquals("Item Inicial", result.getItemIniName());
+        assertEquals("Item Final", result.getItemFinName());
+        assertEquals("initiator@example.com", result.getUserNameIni());
+        assertEquals("recipient@example.com", result.getUserNameFin());
+
+        // Verificar interacciones
+        verify(agreementRepository, times(1)).findById(1L);
+    }
+
+
+
+
+    @Test
+    public void testAcceptAgreement_Success() {
         Agreement agreement = new Agreement();
         agreement.setId(1L);
         agreement.setState(State.PENDING);
@@ -148,52 +200,11 @@ public class AgreementServiceTest {
 
         AgreementResponseDto responseDto = new AgreementResponseDto();
         responseDto.setId(1L);
-        responseDto.setState(State.PENDING);
+        responseDto.setState(State.ACCEPTED);
         responseDto.setItemIniName("Item Inicial");
         responseDto.setItemFinName("Item Final");
         responseDto.setUserNameIni("initiator@example.com");
         responseDto.setUserNameFin("recipient@example.com");
-
-        when(agreementRepository.findById(1L)).thenReturn(Optional.of(agreement));
-        when(modelMapper.map(any(Agreement.class), eq(AgreementResponseDto.class))).thenReturn(responseDto);
-
-        AgreementResponseDto result = agreementService.getAgreementById(1L);
-
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals(State.PENDING, result.getState());
-        assertEquals("Item Inicial", result.getItemIniName());
-        assertEquals("Item Final", result.getItemFinName());
-        assertEquals("initiator@example.com", result.getUserNameIni());
-        assertEquals("recipient@example.com", result.getUserNameFin());
-
-        verify(agreementRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    public void testAcceptAgreement_Success() {
-        Agreement agreement = new Agreement();
-        agreement.setId(1L);
-        agreement.setState(State.PENDING);
-
-        // Mock Items
-        Item itemIni = new Item();
-        itemIni.setId(1L);
-        itemIni.setName("Item Inicial");
-
-        Item itemFin = new Item();
-        itemFin.setId(2L);
-        itemFin.setName("Item Final");
-
-        // Asignar Items al Agreement
-        agreement.setItem_ini(itemIni);
-        agreement.setItem_fin(itemFin);
-
-        AgreementResponseDto responseDto = new AgreementResponseDto();
-        responseDto.setId(1L);
-        responseDto.setState(State.ACCEPTED);
-        responseDto.setItemIniName("Item Inicial");
-        responseDto.setItemFinName("Item Final");
 
         when(agreementRepository.findById(1L)).thenReturn(Optional.of(agreement));
         when(agreementRepository.save(any(Agreement.class))).thenReturn(agreement);
@@ -205,6 +216,8 @@ public class AgreementServiceTest {
         assertEquals(State.ACCEPTED, result.getState());
         assertEquals("Item Inicial", result.getItemIniName());
         assertEquals("Item Final", result.getItemFinName());
+        assertEquals("initiator@example.com", result.getUserNameIni());
+        assertEquals("recipient@example.com", result.getUserNameFin());
 
         verify(agreementRepository, times(1)).save(agreement);
         verify(eventPublisher, times(1)).publishEvent(any(AgreementAceptadoEvent.class));
@@ -226,15 +239,28 @@ public class AgreementServiceTest {
         itemFin.setId(2L);
         itemFin.setName("Item Final");
 
-        // Asignar Items al Agreement
+        // Mock Usuarios
+        Usuario initiator = new Usuario();
+        initiator.setId(1L);
+        initiator.setEmail("initiator@example.com");
+
+        Usuario recipient = new Usuario();
+        recipient.setId(2L);
+        recipient.setEmail("recipient@example.com");
+
+        // Asignar Items y Usuarios al Agreement
         agreement.setItem_ini(itemIni);
         agreement.setItem_fin(itemFin);
+        agreement.setInitiator(initiator);
+        agreement.setRecipient(recipient);
 
         AgreementResponseDto responseDto = new AgreementResponseDto();
         responseDto.setId(1L);
         responseDto.setState(State.REJECTED);
         responseDto.setItemIniName("Item Inicial");
         responseDto.setItemFinName("Item Final");
+        responseDto.setUserNameIni("initiator@example.com");
+        responseDto.setUserNameFin("recipient@example.com");
 
         when(agreementRepository.findById(1L)).thenReturn(Optional.of(agreement));
         when(agreementRepository.save(any(Agreement.class))).thenReturn(agreement);
@@ -246,6 +272,8 @@ public class AgreementServiceTest {
         assertEquals(State.REJECTED, result.getState());
         assertEquals("Item Inicial", result.getItemIniName());
         assertEquals("Item Final", result.getItemFinName());
+        assertEquals("initiator@example.com", result.getUserNameIni());
+        assertEquals("recipient@example.com", result.getUserNameFin());
 
         verify(agreementRepository, times(1)).save(agreement);
         verify(eventPublisher, times(1)).publishEvent(any(AgreementRechazadoEvent.class));

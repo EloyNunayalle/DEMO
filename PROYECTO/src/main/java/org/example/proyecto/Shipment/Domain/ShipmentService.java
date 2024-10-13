@@ -1,6 +1,7 @@
 package org.example.proyecto.Shipment.Domain;
 
 import org.example.proyecto.Agreement.Domain.Agreement;
+import org.example.proyecto.Agreement.Domain.Status;
 import org.example.proyecto.Agreement.Infrastructure.AgreementRepository;
 import org.example.proyecto.Shipment.Dto.ShipmentRequestDto;
 import org.example.proyecto.Shipment.Dto.ShipmentResponseDto;
@@ -9,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,20 +32,30 @@ public class ShipmentService {
                 .collect(Collectors.toList());
     }
 
-    public ShipmentResponseDto createShipment(ShipmentRequestDto shipmentRequestDto) {
+    public void createShipmentForAgreement(Agreement agreement) {
+        // Validar el estado del acuerdo
+        if (agreement.getStatus() != Status.ACCEPTED) {
+            throw new IllegalStateException("El acuerdo debe estar en estado ACCEPTED para crear un envío");
+        }
+
         Shipment shipment = new Shipment();
-        mapRequestDtoToShipment(shipmentRequestDto, shipment);
-        Shipment savedShipment = shipmentRepository.save(shipment);
-        return modelMapper.map(savedShipment, ShipmentResponseDto.class);
+        shipment.setInitiatorAddress(agreement.getInitiator().getAddress());
+        shipment.setReceiveAddress(agreement.getRecipient().getAddress());
+
+        // Asignar una fecha de entrega predeterminada (7 días después)
+        shipment.setDeliveryDate(LocalDateTime.now().plusDays(7));
+
+        shipment.setAgreement(agreement);
+        shipmentRepository.save(shipment);
     }
 
-    public ShipmentResponseDto getShipmentById(Long id) {  // Cambiado de int a Long
+    public ShipmentResponseDto getShipmentById(Long id) {
         Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Shipment not found"));
         return modelMapper.map(shipment, ShipmentResponseDto.class);
     }
 
-    public ShipmentResponseDto updateShipment(Long id, ShipmentRequestDto shipmentRequestDto) {  // Cambiado de int a Long
+    public ShipmentResponseDto updateShipment(Long id, ShipmentRequestDto shipmentRequestDto) {
         Shipment existingShipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Shipment not found"));
         mapRequestDtoToShipment(shipmentRequestDto, existingShipment);
@@ -51,7 +63,7 @@ public class ShipmentService {
         return modelMapper.map(updatedShipment, ShipmentResponseDto.class);
     }
 
-    public void deleteShipment(Long id) {  // Cambiado de int a Long
+    public void deleteShipment(Long id) {
         shipmentRepository.deleteById(id);
     }
 
@@ -64,5 +76,4 @@ public class ShipmentService {
                 .orElseThrow(() -> new RuntimeException("Agreement not found"));
         shipment.setAgreement(agreement);
     }
-
 }

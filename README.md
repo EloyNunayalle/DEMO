@@ -337,34 +337,33 @@ Representa las calificaciones y comentarios dejados por los usuarios después de
 #### Pruebas Unitarias
 Las pruebas unitarias se han desarrollado para cada controlador y endpoint de la aplicación.
 
-| **Caso de prueba**               | **Descripción**                                                                                           | **Criterio de éxito**                                                                                      |
-|----------------------------------|-----------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Cliente termina `pedidoLocal`    | Simulación de finalizar un pedido local. Se valida la creación y actualización correcta del pedido.        | La solicitud es válida y la respuesta contiene los valores esperados.                                        |
-| Cliente agrega orden             | Simulación de agregar una orden a un pedido local existente.                                                | La orden se agrega correctamente al pedido existente, se actualiza el estado y se refleja en la respuesta.   |
-| Cliente inicia `delivery`        | Simulación de la creación de un pedido de delivery y su flujo completo hasta la entrega.                    | El delivery se crea, cambia de estado según el flujo, y se valida la respuesta correcta en cada etapa.       |
-| Cliente inicia `reserva`         | Simulación de la creación de una reserva y su estado.                                                      | La reserva se crea correctamente, y se actualizan los estados de las mesas según la disponibilidad.          |
+| **Caso de prueba**              | **Descripción**                                                                                          | **Criterio de éxito**                                                                                      |
+|---------------------------------|----------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Usuario realiza un acuerdo      | Simulación de un usuario iniciando un acuerdo de intercambio. Se evalúa la creación correcta del acuerdo. | El acuerdo se crea correctamente y se refleja en la respuesta con el estado inicial "PENDING".              |
+| Usuario acepta un acuerdo       | Simulación de aceptación de un acuerdo por el otro usuario involucrado en el intercambio.                 | El acuerdo cambia de estado a "ACCEPTED" y el sistema genera un `Shipment` automáticamente.                 |
+| Usuario crea un ítem            | Simulación de la creación de un ítem para intercambio.                                                    | El ítem se crea correctamente y se refleja en la lista del usuario.                                          |
+| Usuario califica a otro usuario | Simulación de la creación de una calificación después de un intercambio.                                  | La calificación se guarda y se refleja en la lista de calificaciones del usuario receptor.                   |
 
 #### Tipo de pruebas
 
 | **Tipo de prueba**    | **Descripción**                                                                                              | **Criterio de éxito**                                                                                      |
 |----------------------|--------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Pruebas de respuesta  | Se evaluará el código de respuesta HTTP y, en caso exista, el ResponseEntity del endpoint.                    | El código de respuesta HTTP y el contenido del ResponseEntity son los esperados.                             |
-| Pruebas de DTOs       | Se evaluará la validez de la solicitud en los campos en endpoints POST y la respuesta obtenida en endpoints GET. | La aplicación maneja correctamente los DTOs, permitiendo solo parámetros válidos y retornando valores correctos. |
+| Pruebas de respuesta  | Se evaluará el código de respuesta HTTP y, en caso exista, el `ResponseEntity` del endpoint.                   | El código de respuesta HTTP y el contenido del `ResponseEntity` son los esperados.                            |
+| Pruebas de DTOs       | Se evaluará la validez de los datos enviados en las solicitudes POST y las respuestas GET.                     | La aplicación maneja correctamente los DTOs, permitiendo solo datos válidos y retornando respuestas correctas. |
 | Manejo de excepciones | Se evaluará el código de respuesta HTTP en situaciones de errores forzados.                                   | Los endpoints responden con las excepciones esperadas en situaciones de error.                               |
-| Pruebas de seguridad  | Se evaluará que los usuarios autorizados y autenticados puedan acceder a los endpoints protegidos.             | Los endpoints responden con las excepciones de seguridad correspondientes según los permisos asignados.      |
+| Pruebas de seguridad  | Se evaluará que solo los usuarios autorizados puedan acceder a los endpoints protegidos.                      | Los endpoints responden con las excepciones de seguridad correspondientes según los permisos asignados.      |
 
 ### Pruebas de Sistema
 Estas pruebas simulan el flujo completo de procesos de negocio.
 
-| **Nombre de prueba**               | **Descripción**                                                                                                                                                                                                                                                                   |
-|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Cliente inicia `pedidoLocal`       | Simulación del flujo completo desde que un cliente crea una orden hasta que se completa el pedido local. Se evalúan estados intermedios como `EN_PREPARACION`, `LISTO` y `ENTREGADO`.                                                                                              |
-| Cliente inicia `delivery`          | Simulación del proceso de delivery, desde la creación del pedido hasta la entrega por parte del repartidor, evaluando los estados del pedido y del repartidor.                                                                                                                      |
-| Disponibilidad de mesas            | Evaluación de la creación de reservas y pedidos locales en función de la disponibilidad de las mesas.                                                                                                                                       |
-| Asignación de repartidores         | Simulación de la distribución equitativa de pedidos de delivery entre los repartidores disponibles.                                                                                                                                         |
+| **Nombre de prueba**              | **Descripción**                                                                                                                                                                                                                          |
+|-----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Usuario inicia un intercambio     | Simulación del flujo desde que un usuario propone un acuerdo de intercambio hasta que el otro usuario acepta el acuerdo. Se evalúan los cambios de estado y la creación de envíos asociados.                                                |
+| Usuario califica a otro usuario   | Simulación del flujo de calificación después de completar un intercambio. Se evalúa que la calificación se guarde y aparezca correctamente en el perfil del usuario receptor.                                                              |
+| Seguridad en el acceso a datos    | Evaluación de los permisos de acceso de usuarios regulares y administradores. Se prueba que los usuarios solo puedan acceder a su propia información y que los administradores puedan ver todos los datos.                                   |
 
 ### Resultados
-Se detectaron y corrigieron errores en la integración del carrito de compras y el panel de control del administrador. El manejo global de excepciones garantiza una correcta experiencia de usuario, ofreciendo respuestas claras en caso de errores y permitiendo que los administradores registren detalles de los problemas para su posterior revisión.
+Se detectaron y corrigieron errores relacionados con la actualización de acuerdos y la generación de envíos automáticos. El manejo global de excepciones asegura una experiencia de usuario coherente, con respuestas claras y útiles ante errores, y los administradores pueden revisar detalles de los problemas en los registros del sistema.
 
 ## Medidas de Seguridad Implementadas
 

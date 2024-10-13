@@ -28,17 +28,16 @@ public class ItemService {
     private final UsuarioRepository usuarioRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final AuthorizationUtils authorizationUtils;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    ModelMapper modelMapper;
-
-    @Autowired
-    public ItemService(ApplicationEventPublisher eventPublisher, ItemRepository itemRepository, CategoryRepository categoryRepository, UsuarioRepository usuarioRepository, AuthorizationUtils authorizationUtils) {
+    public ItemService(ModelMapper modelMapper, ApplicationEventPublisher eventPublisher, ItemRepository itemRepository, CategoryRepository categoryRepository, UsuarioRepository usuarioRepository, AuthorizationUtils authorizationUtils) {
         this.itemRepository = itemRepository;
         this.categoryRepository = categoryRepository;
         this.usuarioRepository = usuarioRepository;
         this.authorizationUtils = authorizationUtils;
         this.eventPublisher = eventPublisher;
+        this.modelMapper = modelMapper;
     }
 
     public ItemResponseDto createItem(ItemRequestDto itemDto) {

@@ -65,7 +65,7 @@ public class AgreementService {
     @Transactional
     public AgreementResponseDto createAgreement(AgreementRequestDto agreementRequestDto) {
 
-        if (agreementRequestDto.getStatus() != Status.PENDING) {
+        if (agreementRequestDto.getState() != State.PENDING) {
             throw new IllegalArgumentException("No se puede crear un acuerdo directamente en estado ACCEPTED o REJECTED");
         }
 
@@ -91,7 +91,7 @@ public class AgreementService {
         agreement.setRecipient(usuarioFin);
 
 
-        agreement.setStatus(agreementRequestDto.getStatus());
+        agreement.setState(agreementRequestDto.getState());
 
 
         Agreement savedAgreement = agreementRepository.save(agreement);
@@ -130,12 +130,12 @@ public class AgreementService {
                 .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
 
         // Verificamos que el estado actual sea PENDING
-        if (agreement.getStatus() != Status.PENDING) {
+        if (agreement.getState() != State.PENDING) {
             throw new IllegalArgumentException("Solo los acuerdos en estado PENDING pueden ser aceptados");
         }
 
         // Cambiamos el estado a ACCEPTED
-        agreement.setStatus(Status.ACCEPTED);
+        agreement.setState(State.ACCEPTED);
 
         // Guardamos el acuerdo actualizado en la base de datos
         Agreement savedAgreement = agreementRepository.save(agreement);
@@ -162,12 +162,12 @@ public class AgreementService {
                 .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
 
         // Verificamos que el estado actual sea PENDING
-        if (agreement.getStatus() != Status.PENDING) {
+        if (agreement.getState() != State.PENDING) {
             throw new IllegalArgumentException("Solo los acuerdos en estado PENDING pueden ser rechazados");
         }
 
         // Cambiamos el estado a REJECTED
-        agreement.setStatus(Status.REJECTED);
+        agreement.setState(State.REJECTED);
 
         // Guardamos el acuerdo actualizado en la base de datos
         Agreement savedAgreement = agreementRepository.save(agreement);
@@ -189,7 +189,7 @@ public class AgreementService {
         Agreement existingAgreement = agreementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
 
-        if (existingAgreement.getStatus() == Status.REJECTED || existingAgreement.getStatus() == Status.ACCEPTED) {
+        if (existingAgreement.getState() == State.REJECTED || existingAgreement.getState() == State.ACCEPTED) {
             throw new IllegalArgumentException("No se puede cambiar el estado de un acuerdo que ya ha sido ACCEPTED o REJECTED");
         }
 //sdfdsfds

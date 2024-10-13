@@ -2,17 +2,14 @@
 
     import lombok.Getter;
     import lombok.Setter;
-    import org.example.proyecto.Agreement.Domain.Agreement;
-    import org.example.proyecto.Agreement.Domain.Status;
-
-    import java.time.LocalDateTime;
+    import org.example.proyecto.Agreement.Domain.State;
 
 
     @Getter
     @Setter
     public class AgreementResponseDto {
         private Long id;
-        private Status status;
+        private State state;
         private String itemIniName;
         private String itemFinName;
         private String userNameIni;

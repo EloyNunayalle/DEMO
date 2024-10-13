@@ -1,7 +1,7 @@
 package org.example.proyecto.Shipment.Domain;
 
 import org.example.proyecto.Agreement.Domain.Agreement;
-import org.example.proyecto.Agreement.Domain.Status;
+import org.example.proyecto.Agreement.Domain.State;
 import org.example.proyecto.Agreement.Infrastructure.AgreementRepository;
 import org.example.proyecto.Shipment.Dto.ShipmentRequestDto;
 import org.example.proyecto.Shipment.Dto.ShipmentResponseDto;
@@ -34,7 +34,7 @@ public class ShipmentService {
 
     public void createShipmentForAgreement(Agreement agreement) {
         // Validar el estado del acuerdo
-        if (agreement.getStatus() != Status.ACCEPTED) {
+        if (agreement.getState() != State.ACCEPTED) {
             throw new IllegalStateException("El acuerdo debe estar en estado ACCEPTED para crear un envío");
         }
 

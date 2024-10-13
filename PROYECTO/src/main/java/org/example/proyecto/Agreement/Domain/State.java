@@ -1,5 +1,5 @@
 package org.example.proyecto.Agreement.Domain;
 
-public enum Status {
+public enum State {
     PENDING, ACCEPTED, REJECTED
 }

@@ -7,8 +7,7 @@
     import org.example.proyecto.Item.Domain.Item;
     import org.example.proyecto.Shipment.Domain.Shipment;
     import org.example.proyecto.Usuario.Domain.Usuario;
-    
-    import javax.validation.constraints.FutureOrPresent;
+
     import javax.validation.constraints.NotNull;
     import java.time.LocalDateTime;
     
@@ -27,7 +26,7 @@
 
         @NotNull(message = "El estado no puede ser nulo")
         @Enumerated(EnumType.STRING)
-        private Status status;
+        private State state;
     
 
 

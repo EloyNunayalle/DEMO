@@ -1,12 +1,10 @@
+package org.example.proyecto;
 
-
-import org.modelmapper.internal.bytebuddy.utility.dispatcher.JavaDispatcher;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
 
 @DataJpaTest
 @Testcontainers

@@ -40,10 +40,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        // Rutas públicas
                         .requestMatchers("/auth/**").permitAll()
 
 
-                        // Permitir a los usuarios acceso a sus propios ítems
+                        // Acceso de USER a sus propios ítems
                         .requestMatchers(HttpMethod.POST, "/item").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/item/**").hasAuthority("USER")
                         .requestMatchers(HttpMethod.DELETE, "/item/**").hasAuthority("USER")
@@ -51,26 +52,43 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/item/user/{userId}").hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET, "/item/mine").hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET, "/item/{id}").hasAuthority("USER")
+                        // Acceso de ADMIN a sus propios ítems
+                        .requestMatchers(HttpMethod.POST, "/item/{itemId}/approve").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/item").hasAuthority("ADMIN")
 
+                        // Acceso de USER a categorías
+                        .requestMatchers(HttpMethod.GET, "/category").hasAuthority("USER") // Ver todas las categorías
+                        .requestMatchers(HttpMethod.GET, "/category/{id}").hasAuthority("USER") // Ver una categoría por ID
+                        // Acceso de ADMIN a categorías
+                        .requestMatchers(HttpMethod.POST, "/category").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/category/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/category/{id}").hasAuthority("ADMIN")
 
-                        // Configuración de acceso a categorías
-                        .requestMatchers(HttpMethod.GET, "/category").hasAnyAuthority("USER") // Ver todas las categorías
-                        .requestMatchers(HttpMethod.GET, "/category/{id}").hasAnyAuthority("USER") // Ver una categoría por ID
-
-                        // Configuración de acceso a raiting
+                        // Acceso de USER a ratings
                         .requestMatchers(HttpMethod.POST, "/ratings/crear").hasAuthority("USER")
                         .requestMatchers(HttpMethod.GET, "/ratings/usuario/{usuarioId}").hasAuthority("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/{id}").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/ratings/{id}").hasAuthority("USER")
+                        // Acceso de ADMIN a ratings
+                        .requestMatchers(HttpMethod.GET, "/ratings/listar").hasAuthority("ADMIN")
 
-                        // Configuración de acceso a agreements
+
+                        // Acceso de USER a agreements
                         .requestMatchers(HttpMethod.POST, "/agreements/crear").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/agreements/{id}/accept").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/agreements/{id}/reject").hasAuthority("USER")
+                        // Acceso de ADMIN a agreements
+                        .requestMatchers(HttpMethod.GET, "/agreements/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/agreements/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/agreements/{id}").hasAuthority("ADMIN")
 
+                        // Acceso de USER a sus propios datos de usuario
                         .requestMatchers(HttpMethod.GET, "/usuarios/me").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/{id}").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.DELETE, "/usuarios/{id}").hasAuthority("USER")
+                        // Acceso de ADMIN a sus propios datos de usuario
+                        .requestMatchers(HttpMethod.GET, "/usuarios/listar").hasAuthority("ADMIN")
 
-
-                        // Acceso de ADMIN
+                        // Acceso de ADMIN a todas las rutas
                         .requestMatchers("/item/**").hasAuthority("ADMIN")
                         .requestMatchers("/category/**").hasAuthority("ADMIN")
                         .requestMatchers("/usuarios/**").hasAuthority("ADMIN")
@@ -97,8 +115,7 @@ public class SecurityConfig {
     @Bean
     static RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
-        hierarchy.setHierarchy("ADMIN > DRIVER");
-        hierarchy.setHierarchy("ADMIN > PASSENGER");
+        hierarchy.setHierarchy("ADMIN > USER");
 
         return hierarchy;
     }

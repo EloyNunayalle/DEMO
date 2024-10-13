@@ -2,6 +2,7 @@ package org.example.proyecto.auth.utils;
 
 
 import org.example.proyecto.Usuario.Domain.Role;
+import org.example.proyecto.Usuario.Domain.UserDetailsServiceImpl;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.Domain.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthorizationUtils {
     @Autowired
-    private UsuarioService userService ;
+    private UserDetailsServiceImpl userDetailsService;
 
     public boolean isAdminOrResourceOwner(Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -26,10 +27,9 @@ public class AuthorizationUtils {
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername(); // En este caso, el correo es el nombre de usuario.
-        String role = userDetails.getAuthorities().iterator().next().getAuthority(); // Obtiene el rol.
 
         // Busca al usuario por su email y rol.
-        Usuario usuario = userService.findByEmail(email, role);
+        Usuario usuario = userDetailsService.loadUserByUsername(email);
 
         // Verifica si el usuario es el propietario del recurso o es administrador.
         return usuario.getId().equals(id) || usuario.getRole().equals(Role.ADMIN);

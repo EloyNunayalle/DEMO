@@ -4,9 +4,11 @@ package org.example.proyecto.Usuario.Domain;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
 import org.example.proyecto.Usuario.dto.UsuarioRequestDto;
 import org.example.proyecto.Usuario.dto.UsuarioResponseDto;
+import org.example.proyecto.auth.utils.AuthorizationUtils;
 import org.example.proyecto.event.usuario.UsuarioCreadoEvent;
 import org.example.proyecto.exception.InvalidUserFieldException;
 import org.example.proyecto.exception.ResourceNotFoundException;
+import org.example.proyecto.exception.UnauthorizeOperationException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,6 +33,9 @@ public class UsuarioService {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private AuthorizationUtils authorizationUtils;
 
     public UsuarioResponseDto registrarUsuario(UsuarioRequestDto requestDTO) {
         // Validar nombre
@@ -105,6 +110,10 @@ public class UsuarioService {
         Usuario usuarioExistente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario con ID " + id + " no encontrado"));
 
+        if (!authorizationUtils.isAdminOrResourceOwner(usuarioExistente.getId())) {
+            throw new UnauthorizeOperationException("You do not have permission to update this user.");
+        }
+
         modelMapper.map(requestDTO, usuarioExistente);
         usuarioRepository.save(usuarioExistente);
 
@@ -114,14 +123,13 @@ public class UsuarioService {
     public void eliminarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario con ID " + id + " no encontrado"));
+
+        if (!authorizationUtils.isAdminOrResourceOwner(usuario.getId())) {
+            throw new UnauthorizeOperationException("You do not have permission to delete this user.");
+        }
         usuarioRepository.delete(usuario);
     }
 
-    public Usuario findByEmail(String username, String role) {
-        Usuario user = usuarioRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User nottt found"));
-
-        return user;
-    }
 
 
     public UsuarioResponseDto getUsuarioOwnInfo() {

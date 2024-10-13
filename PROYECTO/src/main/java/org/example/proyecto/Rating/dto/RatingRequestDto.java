@@ -13,16 +13,15 @@ import javax.validation.constraints.NotNull;
 public class RatingRequestDto {
 
     @NotNull(message = "El ID del usuario que recibe la calificación es requerido")
-    private Long usuarioId; // ID del usuario que está siendo calificado
+    private Long usuarioId;
 
     @NotNull(message = "El ID del usuario que da la calificación es requerido")
-    private Long raterUsuarioId; // ID del usuario que realiza la calificación
-
+    private Long raterUsuarioId;
     @Min(1)
     @Max(5)
     @NotNull(message = "La calificación es requerida y debe estar entre 1 y 5")
-    private int rating; // Calificación
+    private int rating;
 
     @NotBlank(message = "El comentario no puede estar vacío")
-    private String comment; // Comentario sobre el trueque
+    private String comment;
 }

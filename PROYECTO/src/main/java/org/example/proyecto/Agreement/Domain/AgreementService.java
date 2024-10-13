@@ -9,11 +9,10 @@ import org.example.proyecto.Agreement.Infrastructure.AgreementRepository;
 import org.example.proyecto.Item.Domain.Item;
 
 import org.example.proyecto.Item.Infraestructure.ItemRepository;
-import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Shipment.Domain.ShipmentService;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
-import org.example.proyecto.event.AgreementCreadoEvent;
+import org.example.proyecto.event.agreement.AgreementCreadoEvent;
 import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

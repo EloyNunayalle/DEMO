@@ -4,7 +4,7 @@ package org.example.proyecto.Usuario.Domain;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
 import org.example.proyecto.Usuario.dto.UsuarioRequestDto;
 import org.example.proyecto.Usuario.dto.UsuarioResponseDto;
-import org.example.proyecto.event.UsuarioCreadoEvent;
+import org.example.proyecto.event.usuario.UsuarioCreadoEvent;
 import org.example.proyecto.exception.InvalidUserFieldException;
 import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;

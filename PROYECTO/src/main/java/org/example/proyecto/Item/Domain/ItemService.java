@@ -7,9 +7,11 @@ import org.example.proyecto.Item.dto.ItemRequestDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
+import org.example.proyecto.event.item.ItemCreatedEvent;
 import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
@@ -20,15 +22,17 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
     private final UsuarioRepository usuarioRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
     ModelMapper modelMapper;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, CategoryRepository categoryRepository, UsuarioRepository usuarioRepository) {
+    public ItemService(ItemRepository itemRepository, CategoryRepository categoryRepository, UsuarioRepository usuarioRepository,ApplicationEventPublisher eventPublisher) {
         this.itemRepository = itemRepository;
         this.categoryRepository = categoryRepository;
         this.usuarioRepository = usuarioRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public ItemResponseDto createItem(ItemRequestDto itemDto) {
@@ -47,8 +51,13 @@ public class ItemService {
 
         Item savedItem = itemRepository.save(item);
 
+        // Publicar el evento de creación de ítem
+        eventPublisher.publishEvent(new ItemCreatedEvent(this, savedItem));
+
         //mapeamos la entidad guardada a un response y luego la retornamos
         ItemResponseDto responseDto= modelMapper.map(savedItem, ItemResponseDto.class);
+
+
 
         responseDto.setUserName(item.getUsuario().getEmail());
         responseDto.setCategoryName(item.getCategory().getName());

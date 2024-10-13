@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.proyecto.Usuario.Domain.Usuario;
-
+import javax.validation.constraints.Size;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 
 
@@ -19,18 +21,28 @@ public class Rating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Min(value = 1, message = "La calificación debe ser al menos 1")
+    @Max(value = 5, message = "La calificación no puede ser mayor que 5")
     private int rating;
 
+    @Size(max = 500, message = "El comentario no puede tener más de 500 caracteres")
     private String comment;
+
     private LocalDateTime createdAt;
 
-    // El usuario que da la calificación
+
     @ManyToOne
     @JoinColumn(name = "rater_usuario_id")
     private Usuario raterUsuario;
 
-    // El usuario que recibe la calificación
+
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

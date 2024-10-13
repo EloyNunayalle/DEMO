@@ -1,6 +1,7 @@
 package org.example.proyecto.Agreement.Domain;
 
 
+import jakarta.transaction.Transactional;
 import org.example.proyecto.Agreement.Dto.AgreementRequestDto;
 import org.example.proyecto.Agreement.Dto.AgreementResponseDto;
 
@@ -8,10 +9,10 @@ import org.example.proyecto.Agreement.Infrastructure.AgreementRepository;
 import org.example.proyecto.Item.Domain.Item;
 
 import org.example.proyecto.Item.Infraestructure.ItemRepository;
-import org.example.proyecto.Item.dto.ItemResponseDto;
+import org.example.proyecto.Shipment.Domain.ShipmentService;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
-import org.example.proyecto.event.AgreementCreadoEvent;
+import org.example.proyecto.event.agreement.AgreementCreadoEvent;
 import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class AgreementService {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private ShipmentService shipmentService;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -57,10 +61,16 @@ public class AgreementService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public AgreementResponseDto createAgreement(AgreementRequestDto agreementRequestDto) {
+
+        if (agreementRequestDto.getStatus() != Status.PENDING) {
+            throw new IllegalArgumentException("No se puede crear un acuerdo directamente en estado ACCEPTED o REJECTED");
+        }
+
         Agreement agreement = new Agreement();
 
-        // Cargar los objetos Item y Usuario utilizando sus identificadores
+
         Item itemIni = itemRepository.findById(agreementRequestDto.getItemIniId())
                 .orElseThrow(() -> new ResourceNotFoundException("Item inicial no encontrado"));
 
@@ -73,30 +83,28 @@ public class AgreementService {
         Usuario usuarioFin = usuarioRepository.findById(agreementRequestDto.getUsuarioFinId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario receptor no encontrado"));
 
-        // Asignar los objetos cargados al acuerdo
+
         agreement.setItem_ini(itemIni);
         agreement.setItem_fin(itemFin);
         agreement.setInitiator(usuarioIni);
         agreement.setRecipient(usuarioFin);
 
-        // Asignar el estado
+
         agreement.setStatus(agreementRequestDto.getStatus());
 
-        // Guardar el acuerdo en la base de datos
+
         Agreement savedAgreement = agreementRepository.save(agreement);
 
-        // Publicar el evento de creación del acuerdo
+
         eventPublisher.publishEvent(new AgreementCreadoEvent(this, savedAgreement));
 
 
-        // Crear y retornar el DTO manualmente asignando los IDs
-        AgreementResponseDto responseDto = new AgreementResponseDto();
-
-        modelMapper.map(savedAgreement, responseDto);
+        AgreementResponseDto responseDto = modelMapper.map(savedAgreement, AgreementResponseDto.class);
         responseDto.setItemFinName(itemFin.getName());
         responseDto.setItemIniName(itemIni.getName());
         responseDto.setUserNameFin(usuarioFin.getEmail());
         responseDto.setUserNameIni(usuarioIni.getEmail());
+
         return responseDto;
     }
 
@@ -104,7 +112,7 @@ public class AgreementService {
         Agreement agreement = agreementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
 
-        // Crear y retornar el DTO manualmente asignando los IDs
+
         AgreementResponseDto responseDto = new AgreementResponseDto();
 
         modelMapper.map(agreement, responseDto);
@@ -115,10 +123,75 @@ public class AgreementService {
         return responseDto;
     }
 
+    @Transactional
+    public AgreementResponseDto acceptAgreement(Long id) {
+        Agreement agreement = agreementRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
+
+        // Verificamos que el estado actual sea PENDING
+        if (agreement.getStatus() != Status.PENDING) {
+            throw new IllegalArgumentException("Solo los acuerdos en estado PENDING pueden ser aceptados");
+        }
+
+        // Cambiamos el estado a ACCEPTED
+        agreement.setStatus(Status.ACCEPTED);
+
+        // Guardamos el acuerdo actualizado en la base de datos
+        Agreement savedAgreement = agreementRepository.save(agreement);
+
+        // Creamos el Shipment asociado al acuerdo aceptado
+        shipmentService.createShipmentForAgreement(savedAgreement);
+
+        // Publicamos el evento de creación del acuerdo
+        eventPublisher.publishEvent(new AgreementCreadoEvent(this, savedAgreement));
+
+        // Retornamos el response DTO
+        AgreementResponseDto responseDto = modelMapper.map(savedAgreement, AgreementResponseDto.class);
+        responseDto.setItemFinName(savedAgreement.getItem_fin().getName());
+        responseDto.setItemIniName(savedAgreement.getItem_ini().getName());
+        responseDto.setUserNameFin(savedAgreement.getRecipient().getEmail());
+        responseDto.setUserNameIni(savedAgreement.getInitiator().getEmail());
+
+        return responseDto;
+    }
+
+    @Transactional
+    public AgreementResponseDto rejectAgreement(Long id) {
+        Agreement agreement = agreementRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
+
+        // Verificamos que el estado actual sea PENDING
+        if (agreement.getStatus() != Status.PENDING) {
+            throw new IllegalArgumentException("Solo los acuerdos en estado PENDING pueden ser rechazados");
+        }
+
+        // Cambiamos el estado a REJECTED
+        agreement.setStatus(Status.REJECTED);
+
+        // Guardamos el acuerdo actualizado en la base de datos
+        Agreement savedAgreement = agreementRepository.save(agreement);
+
+
+
+        // Retornamos el response DTO
+        AgreementResponseDto responseDto = modelMapper.map(savedAgreement, AgreementResponseDto.class);
+        responseDto.setItemFinName(savedAgreement.getItem_fin().getName());
+        responseDto.setItemIniName(savedAgreement.getItem_ini().getName());
+        responseDto.setUserNameFin(savedAgreement.getRecipient().getEmail());
+        responseDto.setUserNameIni(savedAgreement.getInitiator().getEmail());
+
+        return responseDto;
+    }
+
+    @Transactional
     public AgreementResponseDto updateAgreement(Long id, AgreementRequestDto agreementRequestDto) {
         Agreement existingAgreement = agreementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
 
+        if (existingAgreement.getStatus() == Status.REJECTED || existingAgreement.getStatus() == Status.ACCEPTED) {
+            throw new IllegalArgumentException("No se puede cambiar el estado de un acuerdo que ya ha sido ACCEPTED o REJECTED");
+        }
+//sdfdsfds
         AgreementResponseDto responseDto = new AgreementResponseDto();
 
         modelMapper.map(existingAgreement, responseDto);

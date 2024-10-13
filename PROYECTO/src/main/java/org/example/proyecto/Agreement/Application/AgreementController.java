@@ -15,6 +15,8 @@ import java.util.List;
 @RequestMapping("/agreements")
 public class AgreementController {
 
+
+
     @Autowired
     private AgreementService agreementService;
 
@@ -26,6 +28,7 @@ public class AgreementController {
 
     @PostMapping
     public ResponseEntity<AgreementResponseDto> createAgreement(@Valid @RequestBody AgreementRequestDto agreementRequestDto) {
+
         AgreementResponseDto responseDto = agreementService.createAgreement(agreementRequestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
@@ -42,8 +45,20 @@ public class AgreementController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PutMapping("/{id}/accept")
+    public ResponseEntity<AgreementResponseDto> acceptAgreement(@PathVariable Long id) {
+        AgreementResponseDto responseDto = agreementService.acceptAgreement(id);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<AgreementResponseDto> rejectAgreement(@PathVariable Long id) {
+        AgreementResponseDto responseDto = agreementService.rejectAgreement(id);
+        return ResponseEntity.ok(responseDto);
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<AgreementResponseDto> deleteAgreement(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAgreement(@PathVariable Long id) {
         agreementService.deleteAgreement(id);
         return ResponseEntity.noContent().build();
     }

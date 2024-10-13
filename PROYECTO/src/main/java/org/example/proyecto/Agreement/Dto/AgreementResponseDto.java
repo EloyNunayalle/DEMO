@@ -13,7 +13,6 @@
     public class AgreementResponseDto {
         private Long id;
         private Status status;
-        private LocalDateTime tradeDate;
         private String itemIniName;
         private String itemFinName;
         private String userNameIni;

@@ -1,4 +1,6 @@
 package org.example.proyecto.Shipment.Application;
+import org.example.proyecto.Agreement.Domain.Agreement;
+import org.example.proyecto.Agreement.Infrastructure.AgreementRepository;
 import org.example.proyecto.Category.Domain.Category;
 import org.example.proyecto.Item.Domain.Item;
 import org.example.proyecto.Item.dto.ItemRequestDto;
@@ -7,6 +9,7 @@ import org.example.proyecto.Shipment.Domain.ShipmentService;
 import org.example.proyecto.Shipment.Dto.ShipmentRequestDto;
 import org.example.proyecto.Shipment.Dto.ShipmentResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
+import org.example.proyecto.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +23,9 @@ public class ShipmentController {
     @Autowired
     private ShipmentService shipmentService;
 
+    @Autowired
+    private AgreementRepository agreementRepository;
+
     // Obtener todos los envíos
     @GetMapping
     public List<ShipmentResponseDto> getAllShipments() {
@@ -28,8 +34,13 @@ public class ShipmentController {
 
     // Crear un nuevo envío
     @PostMapping
-    public ShipmentResponseDto createShipment(@Valid @RequestBody ShipmentRequestDto shipmentRequestDto) {
-        return shipmentService.createShipment(shipmentRequestDto);
+    public ShipmentResponseDto createShipmentForAgreement(@Valid @RequestBody ShipmentRequestDto shipmentRequestDto) {
+        Agreement agreement = agreementRepository.findById(shipmentRequestDto.getAgreementId())
+                .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
+
+        shipmentService.createShipmentForAgreement(agreement);
+
+        return new ShipmentResponseDto();
     }
 
     // Obtener un envío por ID

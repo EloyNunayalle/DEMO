@@ -3,10 +3,7 @@ package org.example.proyecto.Usuario.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Getter
 @Setter
@@ -26,6 +23,7 @@ public class UsuarioRequestDto {
     private String email;
 
     @NotNull(message = "El teléfono no puede estar vacío")
+    @Pattern(regexp = "^\\+?[0-9. ()-]{7,15}$", message = "El teléfono debe tener un formato válido")
     @Size(min = 7, max = 15, message = "El teléfono debe tener entre 7 y 15 dígitos")
     private String phone;
 

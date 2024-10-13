@@ -20,7 +20,11 @@
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-    
+
+        @Version
+        private Integer version;
+
+
         @NotNull(message = "El estado no puede ser nulo")
         @Enumerated(EnumType.STRING)
         private Status status;

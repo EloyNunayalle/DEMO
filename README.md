@@ -96,7 +96,7 @@ APIs Externas:
 ### Descripción de Entidades
 
 
-### Usuario
+### 1.Usuario
 Representa a los usuarios del sistema en la plataforma MarketExchange.
 
 
@@ -133,101 +133,287 @@ Representa a los usuarios del sistema en la plataforma MarketExchange.
 | `registrarUsuario`         | Crea un nuevo usuario validando los datos de entrada y disparando el evento `UsuarioCreadoEvent`. |
 | `getUsuarioOwnInfo`        | Devuelve la información del usuario autenticado basado en el contexto de seguridad.              |
 
-#### 2. Item
-Representa los productos que los usuarios desean intercambiar.
+### 2.Item
+Representa los ítems que los usuarios pueden intercambiar en la plataforma MarketExchange.
 
-| **Atributo**  | **Tipo de Variable** | **Descripción**                                 | **Criterios Limitantes**                                     |
-|---------------|----------------------|-------------------------------------------------|--------------------------------------------------------------|
-| id            | Long                 | Identificador único del producto.               | Debe ser único, generado automáticamente.                    |
-| name          | String               | Nombre del producto.                            | Máximo 100 caracteres.                                       |
-| description   | String               | Descripción del producto.                       | Máximo 255 caracteres.                                       |
-| category      | String               | Categoría del producto.                         | Valores permitidos: ELECTRONICS, CLOTHING, TOYS, etc.         |
-| condition     | String               | Estado del producto (nuevo, usado).             | Valores permitidos: NEW, USED.                               |
-
----
-
-#### 3. Agreement
-Registra los acuerdos de intercambio entre usuarios.
-
-| **Atributo**  | **Tipo de Variable** | **Descripción**                                   | **Criterios Limitantes**                                     |
-|---------------|----------------------|---------------------------------------------------|--------------------------------------------------------------|
-| id            | Long                 | Identificador único del acuerdo.                  | Debe ser único, generado automáticamente.                    |
-| status        | Enum                 | Estado del acuerdo.                               | Valores permitidos: PENDING, ACCEPTED, REJECTED.              |
-| tradeDate     | LocalDateTime        | Fecha en la que se realiza el intercambio.        | No puede ser nula.                                            |
-| initiatorUser | User                 | Usuario que inicia el intercambio.                | No puede ser nulo.                                            |
-| receiveUser   | User                 | Usuario que recibe la propuesta de intercambio.   | No puede ser nulo.                                            |
-| initiatorItem | Product              | Producto ofrecido por el usuario que inicia.      | No puede ser nulo.                                            |
-| receiveItem   | Product              | Producto ofrecido por el usuario que recibe.      | No puede ser nulo.                                            |
+| **Atributo**        | **Tipo de Variable**   | **Descripción**                                               | **Criterios Limitantes**                                               |
+|---------------------|------------------------|---------------------------------------------------------------|------------------------------------------------------------------------|
+| `id`                | `Long`                 | Identificador único del ítem.                                  | Debe ser único y generado automáticamente.                             |
+| `name`              | `String`               | Nombre del ítem.                                               | No puede estar vacío, máximo 100 caracteres.                           |
+| `description`       | `String`               | Descripción del ítem.                                          | No puede estar vacía, máximo 255 caracteres.                           |
+| `category`          | `Category`             | Categoría a la que pertenece el ítem.                          | No puede ser nula, debe estar referenciada a una categoría existente.  |
+| `condition`         | `Enum (NEW, USED)`     | Condición del ítem (Nuevo o Usado).                            | No puede ser nula, debe ser `NEW` o `USED`.                            |
+| `status`            | `Enum (PENDING, APPROVED, REJECTED)` | Estado del ítem en la plataforma.                               | Valores permitidos: `PENDING`, `APPROVED`, `REJECTED`.                 |
+| `usuario`           | `Usuario`              | Usuario que está intercambiando el ítem.                       | No puede ser nulo, debe estar referenciado a un usuario existente.      |
+| `createdAt`         | `LocalDateTime`        | Fecha y hora de creación del ítem.                             | Generado automáticamente al crear el ítem.                             |
+| `updatedAt`         | `LocalDateTime`        | Fecha y hora de la última actualización del ítem.              | Actualizado automáticamente en cada modificación.                      |
 
 ---
 
-#### 4. Category
-Clasificación de los productos.
+#### Métodos del endpoint `/item`:
 
-| **Atributo**  | **Tipo de Variable** | **Descripción**                                   | **Criterios Limitantes**                                     |
-|---------------|----------------------|---------------------------------------------------|--------------------------------------------------------------|
-| id            | Long                 | Identificador único de la categoría.              | Debe ser único, generado automáticamente.                    |
-| name          | String               | Nombre de la categoría.                           | Máximo 50 caracteres.                                         |
-
----
-
-#### 5. Rating
-Evaluación del intercambio y comportamiento del usuario.
-
-| **Atributo**  | **Tipo de Variable** | **Descripción**                                   | **Criterios Limitantes**                                     |
-|---------------|----------------------|---------------------------------------------------|--------------------------------------------------------------|
-| id            | Long                 | Identificador único de la calificación.           | Debe ser único, generado automáticamente.                    |
-| rating        | Integer              | Puntuación del intercambio.                       | Valores entre 1 y 5.                                          |
-| comment       | String               | Comentario del usuario sobre el intercambio.      | Opcional, máximo 255 caracteres.                              |
-| user          | User                 | Usuario que realizó la calificación.              | No puede ser nulo.                                            |
-| agreement     | Agreement            | Acuerdo asociado a la calificación.               | No puede ser nulo.                                            |
+| **Método**           | **Ruta**                  | **Roles Permitidos** | **Descripción**                                                   | **Excepciones**                                         | **Métodos de Service**                              |
+|----------------------|---------------------------|----------------------|-------------------------------------------------------------------|---------------------------------------------------------|-----------------------------------------------------|
+| `POST`               | `/`                       | `USER`               | Crea un nuevo ítem.                                               | `ResourceNotFoundException`                             | `createItem(ItemRequestDto dto)`                    |
+| `POST`               | `/{itemId}/approve`        | `ADMIN`              | Aprueba o rechaza un ítem.                                        | `ResourceNotFoundException`                             | `approveItem(Long itemId, Boolean approve)`         |
+| `PUT`                | `/{itemId}`               | `USER`, `ADMIN`      | Actualiza un ítem existente.                                      | `ResourceNotFoundException`, `UnauthorizeOperationException` | `updateItem(Long itemId, ItemRequestDto dto)`    |
+| `GET`                | `/{itemId}`               | `USER`, `ADMIN`      | Devuelve el `ItemResponseDto` del ítem por su id.                 | `ResourceNotFoundException`                             | `getItemById(Long itemId)`                          |
+| `GET`                | `/`                       | `ADMIN`              | Devuelve la lista de todos los ítems en formato `ItemResponseDto`. | -                                                       | `getAllItems()`                                     |
+| `DELETE`             | `/{itemId}`               | `USER`, `ADMIN`      | Elimina un ítem identificado por su id.                           | `ResourceNotFoundException`, `UnauthorizeOperationException` | `deleteItem(Long itemId)`                        |
+| `GET`                | `/category/{categoryId}`  | `USER`, `ADMIN`      | Devuelve los ítems que pertenecen a una categoría específica.      | `ResourceNotFoundException`                             | `getItemsByCategory(Long categoryId)`               |
+| `GET`                | `/user/{userId}`          | `USER`, `ADMIN`      | Devuelve los ítems que pertenecen a un usuario específico.         | `ResourceNotFoundException`                             | `getItemsByUser(Long userId)`                       |
+| `GET`                | `/mine`                   | `USER`               | Devuelve los ítems del usuario autenticado.                       | `UnauthorizeOperationException`                         | `getUserItems()`                                    |
 
 ---
 
-#### 6. Shipment
-Registro de los envíos asociados a los acuerdos.
+#### Métodos adicionales del service:
 
-| **Atributo**  | **Tipo de Variable** | **Descripción**                                   | **Criterios Limitantes**                                     |
-|---------------|----------------------|---------------------------------------------------|--------------------------------------------------------------|
-| id            | Long                 | Identificador único del envío.                    | Debe ser único, generado automáticamente.                    |
-| initiatorAddress | String            | Dirección del usuario que inicia el intercambio.  | Máximo 255 caracteres, no puede ser nulo.                     |
-| receiveAddress  | String            | Dirección del usuario que recibe el intercambio.  | Máximo 255 caracteres, no puede ser nulo.                     |
-| deliveryDate    | LocalDate          | Fecha de entrega del intercambio.                 | No puede ser nula.                                            |
-| agreement       | Agreement          | Acuerdo asociado al envío.                        | No puede ser nulo.                                            |
+| **Método**                | **Descripción**                                                                                   |
+|---------------------------|---------------------------------------------------------------------------------------------------|
+| `approveItem`             | Cambia el estado de un ítem a `APPROVED` o `REJECTED` según la aprobación del administrador.      |
+| `getItemsByCategory`      | Devuelve la lista de ítems filtrados por la categoría seleccionada.                               |
+| `getItemsByUser`          | Devuelve la lista de ítems creados por un usuario específico.                                     |
+| `getUserItems`            | Devuelve la lista de ítems creados por el usuario autenticado en la sesión.                      |
+
 
 ---
+
+### 3.Category
+Representa las categorías a las que pertenecen los ítems en la plataforma MarketExchange. Cada categoría puede contener múltiples ítems.
+
+| **Atributo**        | **Tipo de Variable**   | **Descripción**                                               | **Criterios Limitantes**                                               |
+|---------------------|------------------------|---------------------------------------------------------------|------------------------------------------------------------------------|
+| `id`                | `Long`                 | Identificador único de la categoría.                           | Generado automáticamente.                                              |
+| `name`              | `String`               | Nombre de la categoría.                                        | No puede estar vacío, máximo 100 caracteres.                           |
+| `description`       | `String`               | Descripción de la categoría.                                   | No puede tener más de 255 caracteres.                                  |
+| `items`             | `List<Item>`           | Lista de ítems asociados a la categoría.                       | Puede ser una lista vacía si no hay ítems asociados a esta categoría.   |
+
+---
+
+#### Métodos del endpoint `/category`:
+
+| **Método**           | **Ruta**               | **Roles Permitidos** | **Descripción**                                                   | **Excepciones**                                         | **Métodos de Service**                              |
+|----------------------|------------------------|----------------------|-------------------------------------------------------------------|---------------------------------------------------------|-----------------------------------------------------|
+| `POST`               | `/`                    | `ADMIN`              | Crea una nueva categoría.                                          | `ResourceNotFoundException`                             | `createCategory(CategoryRequestDto dto)`            |
+| `GET`                | `/`                    | `USER`, `ADMIN`      | Devuelve la lista de todas las categorías en formato `CategoryResponseDto`. | -                                               | `getAllCategories()`                               |
+| `GET`                | `/{id}`                | `USER`, `ADMIN`      | Devuelve el `CategoryResponseDto` de una categoría por su id.      | `ResourceNotFoundException`                             | `getCategoryById(Long id)`                          |
+| `PUT`                | `/{id}`                | `ADMIN`              | Actualiza una categoría por su id.                                 | `ResourceNotFoundException`                             | `updateCategory(Long id, CategoryRequestDto dto)`   |
+| `DELETE`             | `/{id}`                | `ADMIN`              | Elimina una categoría por su id.                                   | `ResourceNotFoundException`                             | `deleteCategory(Long id)`                           |
+
+---
+
+#### Métodos adicionales del service:
+
+| **Método**               | **Descripción**                                                                 |
+|--------------------------|---------------------------------------------------------------------------------|
+| `getAllCategories`        | Devuelve la lista de todas las categorías en la plataforma.                     |
+| `getCategoryById`         | Devuelve una categoría específica junto con los ítems asociados.                |
+| `createCategory`          | Crea una nueva categoría en la plataforma.                                      |
+| `updateCategory`          | Actualiza los detalles de una categoría existente.                              |
+| `deleteCategory`          | Elimina una categoría de la plataforma.                                         |
+---
+
+### 5.Agreement
+Representa los acuerdos de intercambio entre dos usuarios en la plataforma MarketExchange. Un acuerdo tiene un estado que puede ser `PENDING`, `ACCEPTED` o `REJECTED`.
+
+| **Atributo**        | **Tipo de Variable**   | **Descripción**                                               | **Criterios Limitantes**                                               |
+|---------------------|------------------------|---------------------------------------------------------------|------------------------------------------------------------------------|
+| `id`                | `Long`                 | Identificador único del acuerdo.                               | Generado automáticamente.                                              |
+| `version`           | `Integer`              | Control de versiones para concurrencia optimista.              | -                                                                      |
+| `state`             | `Enum(State)`          | Estado del acuerdo (PENDING, ACCEPTED, REJECTED).              | No puede ser nulo. Valores permitidos: `PENDING`, `ACCEPTED`, `REJECTED`.|
+| `shipment`          | `Shipment`             | Información de envío relacionada con el acuerdo.               | -                                                                      |
+| `item_ini`          | `Item`                 | Ítem ofrecido por el iniciador del acuerdo.                    | No puede ser nulo.                                                     |
+| `item_fin`          | `Item`                 | Ítem ofrecido por el receptor del acuerdo.                     | No puede ser nulo.                                                     |
+| `initiator`         | `Usuario`              | Usuario que inicia el acuerdo.                                 | No puede ser nulo.                                                     |
+| `recipient`         | `Usuario`              | Usuario que recibe la propuesta de acuerdo.                    | No puede ser nulo.                                                     |
+| `createdAt`         | `LocalDateTime`        | Fecha de creación del acuerdo.                                 | Generado automáticamente.                                              |
+| `updatedAt`         | `LocalDateTime`        | Fecha de última actualización del acuerdo.                     | Actualizado automáticamente en cada modificación.                      |
+
+---
+
+#### Métodos del endpoint `/agreements`:
+
+| **Método**           | **Ruta**               | **Roles Permitidos** | **Descripción**                                                   | **Excepciones**                                         | **Métodos de Service**                             |
+|----------------------|------------------------|----------------------|-------------------------------------------------------------------|---------------------------------------------------------|----------------------------------------------------|
+| `POST`               | `/`                    | `USER`, `ADMIN`      | Crea un nuevo acuerdo entre dos usuarios con los ítems especificados. | `ResourceNotFoundException`, `IllegalArgumentException`  | `createAgreement(AgreementRequestDto dto)`         |
+| `GET`                | `/`                    | `USER`, `ADMIN`      | Devuelve la lista de todos los acuerdos en formato `AgreementResponseDto`. | -                                                      | `getAllAgreements()`                               |
+| `GET`                | `/{id}`                | `USER`, `ADMIN`      | Devuelve el `AgreementResponseDto` de un acuerdo por su id.        | `ResourceNotFoundException`                             | `getAgreementById(Long id)`                        |
+| `PUT`                | `/{id}`                | `USER`, `ADMIN`      | Actualiza un acuerdo existente por su id.                          | `ResourceNotFoundException`, `IllegalArgumentException` | `updateAgreement(Long id, AgreementRequestDto dto)`|
+| `PUT`                | `/{id}/accept`         | `USER`, `ADMIN`      | Acepta un acuerdo en estado `PENDING`.                             | `ResourceNotFoundException`, `IllegalArgumentException` | `acceptAgreement(Long id)`                         |
+| `PUT`                | `/{id}/reject`         | `USER`, `ADMIN`      | Rechaza un acuerdo en estado `PENDING`.                            | `ResourceNotFoundException`, `IllegalArgumentException` | `rejectAgreement(Long id)`                         |
+| `DELETE`             | `/{id}`                | `USER`, `ADMIN`      | Elimina un acuerdo por su id.                                      | `ResourceNotFoundException`                             | `deleteAgreement(Long id)`                         |
+
+---
+
+#### Métodos adicionales del service:
+
+| **Método**               | **Descripción**                                                                 |
+|--------------------------|---------------------------------------------------------------------------------|
+| `getAllAgreements`        | Devuelve la lista de todos los acuerdos en la plataforma.                       |
+| `getAgreementById`        | Devuelve un acuerdo específico por su id.                                       |
+| `createAgreement`         | Crea un nuevo acuerdo entre dos usuarios, validando los ítems ofrecidos.        |
+| `updateAgreement`         | Actualiza los detalles de un acuerdo existente.                                 |
+| `acceptAgreement`         | Cambia el estado del acuerdo a `ACCEPTED` y genera un `Shipment` asociado.      |
+| `rejectAgreement`         | Cambia el estado del acuerdo a `REJECTED`.                                       |
+| `deleteAgreement`         | Elimina un acuerdo de la plataforma.                                            |
+
+---
+
+### 5. Shipment
+Representa los envíos asociados a un acuerdo de intercambio entre dos usuarios en la plataforma MarketExchange. Un envío incluye las direcciones de ambas partes (iniciador y receptor) y una fecha de entrega futura.
+
+| **Atributo**         | **Tipo de Variable**   | **Descripción**                                               | **Criterios Limitantes**                                               |
+|----------------------|------------------------|---------------------------------------------------------------|------------------------------------------------------------------------|
+| `id`                 | `Long`                 | Identificador único del envío.                                 | Generado automáticamente.                                              |
+| `agreement`          | `Agreement`            | Acuerdo asociado con el envío.                                 | No puede ser nulo.                                                     |
+| `initiatorAddress`   | `String`               | Dirección del iniciador del acuerdo.                           | No puede estar vacío.                                                  |
+| `receiveAddress`     | `String`               | Dirección del receptor del acuerdo.                            | No puede estar vacío.                                                  |
+| `deliveryDate`       | `LocalDateTime`        | Fecha de entrega del envío.                                    | Debe ser una fecha futura.                                             |
+
+---
+
+#### Métodos del endpoint `/shipments`:
+
+| **Método**           | **Ruta**               | **Roles Permitidos** | **Descripción**                                                   | **Excepciones**                                         | **Métodos de Service**                              |
+|----------------------|------------------------|----------------------|-------------------------------------------------------------------|---------------------------------------------------------|-----------------------------------------------------|
+| `POST`               | `/`                    | `ADMIN`, `USER`      | Crea un nuevo envío asociado a un acuerdo aceptado.                | `ResourceNotFoundException`, `IllegalStateException`     | `createShipmentForAgreement(Agreement agreement)`   |
+| `GET`                | `/`                    | `ADMIN`, `USER`      | Devuelve la lista de todos los envíos en formato `ShipmentResponseDto`. | -                                                      | `getAllShipments()`                                |
+| `GET`                | `/{id}`                | `ADMIN`, `USER`      | Devuelve el `ShipmentResponseDto` de un envío por su id.           | `RuntimeException`                                      | `getShipmentById(Long id)`                          |
+| `PUT`                | `/{id}`                | `ADMIN`              | Actualiza un envío existente por su id.                            | `RuntimeException`                                      | `updateShipment(Long id, ShipmentRequestDto dto)`   |
+| `DELETE`             | `/{id}`                | `ADMIN`              | Elimina un envío por su id.                                        | `RuntimeException`                                      | `deleteShipment(Long id)`                           |
+
+---
+
+#### Métodos adicionales del service:
+
+| **Método**                   | **Descripción**                                                                     |
+|------------------------------|-------------------------------------------------------------------------------------|
+| `getAllShipments`            | Devuelve la lista de todos los envíos en la plataforma.                              |
+| `createShipmentForAgreement` | Crea un envío para un acuerdo que ha sido aceptado, generando una fecha de entrega.  |
+| `getShipmentById`            | Devuelve un envío específico por su id.                                              |
+| `updateShipment`             | Actualiza los detalles de un envío existente.                                        |
+| `deleteShipment`             | Elimina un envío de la plataforma.                                                   |
+
+---
+### 6.Rating
+Representa las calificaciones y comentarios dejados por los usuarios después de completar un intercambio en la plataforma MarketExchange. Las calificaciones permiten evaluar la experiencia del intercambio entre dos usuarios.
+
+| **Atributo**         | **Tipo de Variable**   | **Descripción**                                               | **Criterios Limitantes**                                               |
+|----------------------|------------------------|---------------------------------------------------------------|------------------------------------------------------------------------|
+| `id`                 | `Long`                 | Identificador único de la calificación.                        | Generado automáticamente.                                              |
+| `rating`             | `int`                  | Valor numérico de la calificación entre 1 y 5.                 | Debe estar entre 1 y 5.                                                |
+| `comment`            | `String`               | Comentario descriptivo del intercambio.                        | No puede estar vacío, máximo 500 caracteres.                           |
+| `raterUsuario`       | `Usuario`              | Usuario que realiza la calificación.                           | No puede ser nulo.                                                     |
+| `usuario`            | `Usuario`              | Usuario que recibe la calificación.                            | No puede ser nulo.                                                     |
+| `createdAt`          | `LocalDateTime`        | Fecha y hora en que se realizó la calificación.                | Se genera automáticamente al momento de crear la calificación.         |
+
+---
+
+#### Métodos del endpoint `/ratings`:
+
+| **Método**           | **Ruta**               | **Roles Permitidos** | **Descripción**                                                   | **Excepciones**                                         | **Métodos de Service**                              |
+|----------------------|------------------------|----------------------|-------------------------------------------------------------------|---------------------------------------------------------|-----------------------------------------------------|
+| `POST`               | `/crear`               | `USER`               | Crea una nueva calificación para un usuario.                      | `RuntimeException`, `ResourceNotFoundException`          | `crearRating(RatingRequestDto dto)`                 |
+| `GET`                | `/listar`              | `USER`, `ADMIN`      | Devuelve la lista de todas las calificaciones.                    | -                                                       | `listarRatings()`                                   |
+| `GET`                | `/usuario/{usuarioId}` | `USER`, `ADMIN`      | Devuelve todas las calificaciones de un usuario específico.        | `ResourceNotFoundException`                              | `obtenerRatingsPorUsuario(Long usuarioId)`          |
+| `DELETE`             | `/{id}`                | `USER`, `ADMIN`      | Elimina una calificación por su id.                                | `ResourceNotFoundException`, `UnauthorizeOperationException` | `deleteItem(Long id)`                               |
+
+---
+
+#### Métodos adicionales del service:
+
+| **Método**                    | **Descripción**                                                                     |
+|-------------------------------|-------------------------------------------------------------------------------------|
+| `crearRating`                 | Crea una nueva calificación para un intercambio y la almacena en la base de datos.   |
+| `listarRatings`               | Devuelve una lista de todas las calificaciones realizadas en la plataforma.          |
+| `obtenerRatingsPorUsuario`    | Devuelve todas las calificaciones recibidas por un usuario específico.               |
+| `deleteItem`                  | Elimina una calificación existente si el usuario tiene permisos para hacerlo.        |
+
 
 ## Testing y Manejo de Errores
 
 ### Niveles de Testing Realizados
-1. **Pruebas Unitarias**: Se realizan para cada endpoint de la API, evaluando respuestas HTTP y validaciones de datos.
-2. **Pruebas de Sistema**: Simulan los flujos de negocio, como la creación de acuerdos y calificación de intercambios.
 
-### Manejo de Errores
-El sistema utiliza un manejo global de excepciones para capturar errores inesperados, con mensajes claros para los usuarios y registros detallados para los administradores.
+#### Pruebas Unitarias
+Las pruebas unitarias se han desarrollado para cada controlador y endpoint de la aplicación.
+
+| **Caso de prueba**               | **Descripción**                                                                                           | **Criterio de éxito**                                                                                      |
+|----------------------------------|-----------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Cliente termina `pedidoLocal`    | Simulación de finalizar un pedido local. Se valida la creación y actualización correcta del pedido.        | La solicitud es válida y la respuesta contiene los valores esperados.                                        |
+| Cliente agrega orden             | Simulación de agregar una orden a un pedido local existente.                                                | La orden se agrega correctamente al pedido existente, se actualiza el estado y se refleja en la respuesta.   |
+| Cliente inicia `delivery`        | Simulación de la creación de un pedido de delivery y su flujo completo hasta la entrega.                    | El delivery se crea, cambia de estado según el flujo, y se valida la respuesta correcta en cada etapa.       |
+| Cliente inicia `reserva`         | Simulación de la creación de una reserva y su estado.                                                      | La reserva se crea correctamente, y se actualizan los estados de las mesas según la disponibilidad.          |
+
+#### Tipo de pruebas
+
+| **Tipo de prueba**    | **Descripción**                                                                                              | **Criterio de éxito**                                                                                      |
+|----------------------|--------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Pruebas de respuesta  | Se evaluará el código de respuesta HTTP y, en caso exista, el ResponseEntity del endpoint.                    | El código de respuesta HTTP y el contenido del ResponseEntity son los esperados.                             |
+| Pruebas de DTOs       | Se evaluará la validez de la solicitud en los campos en endpoints POST y la respuesta obtenida en endpoints GET. | La aplicación maneja correctamente los DTOs, permitiendo solo parámetros válidos y retornando valores correctos. |
+| Manejo de excepciones | Se evaluará el código de respuesta HTTP en situaciones de errores forzados.                                   | Los endpoints responden con las excepciones esperadas en situaciones de error.                               |
+| Pruebas de seguridad  | Se evaluará que los usuarios autorizados y autenticados puedan acceder a los endpoints protegidos.             | Los endpoints responden con las excepciones de seguridad correspondientes según los permisos asignados.      |
+
+### Pruebas de Sistema
+Estas pruebas simulan el flujo completo de procesos de negocio.
+
+| **Nombre de prueba**               | **Descripción**                                                                                                                                                                                                                                                                   |
+|------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Cliente inicia `pedidoLocal`       | Simulación del flujo completo desde que un cliente crea una orden hasta que se completa el pedido local. Se evalúan estados intermedios como `EN_PREPARACION`, `LISTO` y `ENTREGADO`.                                                                                              |
+| Cliente inicia `delivery`          | Simulación del proceso de delivery, desde la creación del pedido hasta la entrega por parte del repartidor, evaluando los estados del pedido y del repartidor.                                                                                                                      |
+| Disponibilidad de mesas            | Evaluación de la creación de reservas y pedidos locales en función de la disponibilidad de las mesas.                                                                                                                                       |
+| Asignación de repartidores         | Simulación de la distribución equitativa de pedidos de delivery entre los repartidores disponibles.                                                                                                                                         |
+
+### Resultados
+Se detectaron y corrigieron errores en la integración del carrito de compras y el panel de control del administrador. El manejo global de excepciones garantiza una correcta experiencia de usuario, ofreciendo respuestas claras en caso de errores y permitiendo que los administradores registren detalles de los problemas para su posterior revisión.
 
 ## Medidas de Seguridad Implementadas
 
 ### Seguridad de Datos
-- **Cifrado de contraseñas**: Se utiliza bcrypt para el hash de contraseñas.
-- **Autenticación**: Implementación de JWT (JSON Web Tokens) para autenticar usuarios.
+
+- **Cifrado de contraseñas**: Se utiliza bcrypt para el hash de contraseñas, garantizando que no se almacenen en texto plano.
+- **Autenticación**: Se implementa JWT (JSON Web Tokens) para autenticar a los usuarios.
+- **Autorización**: Permisos basados en roles (`ADMIN`, `USER`) aseguran que cada usuario solo pueda acceder a las funcionalidades que le corresponden.
+
+### Prevención de Vulnerabilidades
+
+- **Protección contra inyección SQL**: Se utilizan consultas preparadas para evitar ataques de inyección SQL.
+- **Mitigación de XSS y CSRF**: Se emplean tokens CSRF y sanitización de entradas de usuario para prevenir ataques de scripting y falsificación de solicitudes.
 
 ## Eventos y Asincronía
-Los eventos se manejan de manera asincrónica para operaciones que no requieren una respuesta inmediata, como la generación de envíos cuando se acepta un acuerdo.
+El sistema implementa eventos asincrónicos para gestionar procesos en segundo plano sin interrumpir la experiencia del usuario. Algunos ejemplos incluyen:
+
+- **Procesamiento de pedidos**: Los pedidos se gestionan en segundo plano, actualizando los estados sin afectar la usabilidad de la aplicación.
+- **Notificaciones de estado**: Se generan eventos para actualizar el estado de los pedidos y notificar a los usuarios sobre cambios importantes.
 
 ## GitHub
 
 ### GitHub Projects
-Se utilizó GitHub Projects para la asignación de tareas y seguimiento del progreso del proyecto.
+Se utilizó GitHub Projects para gestionar tareas y asignarlas a los miembros del equipo, con seguimiento del progreso. Se asignaron prioridades a los issues para definir cuáles eran críticas (CRITICAL), importantes (HIGH), medias (MEDIUM), bajas (LOW) u opcionales (OPTIONAL).
 
 ### GitHub Actions
-Se configuró un pipeline de CI/CD para ejecutar pruebas y despliegues automáticos.
+Se configuró un flujo de CI/CD con GitHub Actions para ejecutar pruebas automáticas y realizar despliegues en un servidor de prueba, garantizando la estabilidad y calidad del código antes de su integración en producción.
 
 ## Conclusión
 
-El sistema de trueque digital implementado permite a los usuarios intercambiar productos de manera eficiente, mejorando la reutilización y fomentando una economía colaborativa.
+### Logros del Proyecto
+Este proyecto ha permitido implementar una plataforma de trueque eficiente, donde los usuarios pueden intercambiar bienes, calificar sus transacciones y mantener la seguridad de sus datos mediante autenticación y permisos adecuados.
 
----
+### Aprendizajes Clave
+- Profundización en la integración de eventos asincrónicos para mejorar la fluidez de los procesos en segundo plano.
+- Optimización del flujo de CI/CD para asegurar entregas continuas sin interrupciones.
+
+### Trabajo Futuro
+- Implementación de notificaciones en tiempo real para mejorar la experiencia de los usuarios y meseros.
+- Optimización del sistema de reseñas para incluir encuestas más detalladas.
+
+## Apéndices
+
+### Licencia
+Este proyecto está bajo la licencia MIT.
+
+### Referencias
+- Documentación de Node.js: [https://nodejs.org/](https://nodejs.org/)
+- Documentación de MySQL: [https://dev.mysql.com/doc/](https://dev.mysql.com/doc/)
 
 
 

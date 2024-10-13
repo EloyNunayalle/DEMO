@@ -1,10 +1,15 @@
 package org.example.proyecto.Rating.Domain;
 
+import org.example.proyecto.Item.Domain.Item;
 import org.example.proyecto.Rating.Infrastructure.RatingRepository;
 import org.example.proyecto.Rating.dto.RatingRequestDto;
 import org.example.proyecto.Rating.dto.RatingResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
+import org.example.proyecto.auth.domain.AuthenticationService;
+import org.example.proyecto.auth.utils.AuthorizationUtils;
+import org.example.proyecto.exception.ResourceNotFoundException;
+import org.example.proyecto.exception.UnauthorizeOperationException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +29,9 @@ public class RatingService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private AuthorizationUtils authorizationUtils;
 
     
     public RatingResponseDto crearRating(RatingRequestDto requestDTO) {
@@ -62,6 +70,16 @@ public class RatingService {
                 .map(this::convertirAResponseDTO)
                 .collect(Collectors.toList());
     }
+    public void deleteItem(Long itemId) {
+        Rating rating = ratingRepository.findById(itemId)
+                .orElseThrow(() -> new ResourceNotFoundException("raiting not found"));
+
+        if (!authorizationUtils.isAdminOrResourceOwner(rating.getUsuario().getId())) {
+            throw new UnauthorizeOperationException("You do not have permission to delete this item.");
+        }
+
+        ratingRepository.delete(rating);
+    }
 
 
     private RatingResponseDto convertirAResponseDTO(Rating rating) {
@@ -70,4 +88,5 @@ public class RatingService {
         responseDTO.setUsuarioNombre(rating.getUsuario().getFirstname() + " " + rating.getUsuario().getLastname());
         return responseDTO;
     }
+
 }

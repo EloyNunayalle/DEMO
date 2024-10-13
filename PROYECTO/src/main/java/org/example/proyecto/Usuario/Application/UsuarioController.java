@@ -17,12 +17,6 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-   
-    @PostMapping("/registrar")
-    public ResponseEntity<UsuarioResponseDto> registrarUsuario(@RequestBody UsuarioRequestDto requestDTO) {
-        UsuarioResponseDto nuevoUsuario = usuarioService.registrarUsuario(requestDTO);
-        return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
-    }
 
     
     @GetMapping("/{id}")

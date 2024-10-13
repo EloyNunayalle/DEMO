@@ -1,5 +1,6 @@
 package org.example.proyecto.Rating.Application;
 
+import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Rating.Domain.RatingService;
 import org.example.proyecto.Rating.dto.RatingRequestDto;
 import org.example.proyecto.Rating.dto.RatingResponseDto;
@@ -36,5 +37,11 @@ public class RatingController {
     public ResponseEntity<List<RatingResponseDto>> obtenerRatingsPorUsuario(@PathVariable Long usuarioId) {
         List<RatingResponseDto> ratings = ratingService.obtenerRatingsPorUsuario(usuarioId);
         return new ResponseEntity<>(ratings, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<RatingResponseDto> deleteRating(@PathVariable Long ratingId) {
+        ratingService.deleteItem(ratingId);
+        return ResponseEntity.noContent().build();
     }
 }

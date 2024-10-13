@@ -1,4 +1,4 @@
-package org.example.proyecto.event;
+package org.example.proyecto.event.usuario;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;

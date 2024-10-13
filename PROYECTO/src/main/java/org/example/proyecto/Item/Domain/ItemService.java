@@ -7,8 +7,8 @@ import org.example.proyecto.Item.dto.ItemRequestDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.Usuario.infrastructure.UsuarioRepository;
-import org.example.proyecto.event.item.ItemCreatedEvent;
 import org.example.proyecto.auth.utils.AuthorizationUtils;
+import org.example.proyecto.event.item.ItemCreatedEvent;
 import org.example.proyecto.exception.ResourceNotFoundException;
 import org.example.proyecto.exception.UnauthorizeOperationException;
 import org.modelmapper.ModelMapper;
@@ -55,7 +55,7 @@ public class ItemService {
         // Agregamos la categoria y user que no estaban en el dto
         item.setCategory(category);
         item.setUsuario(user);
-
+        item.setStatus(Status.PENDING);
         Item savedItem = itemRepository.save(item);
 
         // Publicar el evento de creación de ítem
@@ -70,6 +70,22 @@ public class ItemService {
         responseDto.setCategoryName(item.getCategory().getName());
 
         return responseDto;
+    }
+
+    // Metodo para que el administrador apruebe o rechace el ítem
+    public ItemResponseDto approveItem(Long itemId, Boolean approve) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
+
+        if (approve) {
+            item.setStatus(Status.APPROVED); // Aprobar el ítem
+        } else {
+            item.setStatus(Status.REJECTED); // Rechazar el ítem
+        }
+
+        itemRepository.save(item);
+
+        return modelMapper.map(item, ItemResponseDto.class);
     }
 
     public ItemResponseDto updateItem(Long itemId, ItemRequestDto itemRequestDto) {

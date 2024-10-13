@@ -38,6 +38,9 @@ public class Item {
     @NotNull(message = "La condición del ítem no puede ser nula")
     private Condition condition;
 
+    @Enumerated(EnumType.STRING)
+    private Status status; // estado de item (Pendiente, aprobado, denegado
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     @NotNull(message = "El usuario no puede ser nulo")

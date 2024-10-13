@@ -1,4 +1,4 @@
-package org.example.proyecto.event;
+package org.example.proyecto.event.agreement;
 
 import lombok.Getter;
 import org.example.proyecto.Agreement.Domain.Agreement;

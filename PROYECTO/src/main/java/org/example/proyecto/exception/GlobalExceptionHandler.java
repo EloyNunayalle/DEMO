@@ -1,8 +1,10 @@
 package org.example.proyecto.exception;
 
+import org.example.proyecto.auth.exception.UserAlreadyExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
@@ -24,4 +26,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleGeneralException(Exception ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(UnauthorizeOperationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String handleUnauthorizeOperationException(UnauthorizeOperationException e) {return e.getMessage();}
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleUserAlreadyExistException(UserAlreadyExistException e) {return e.getMessage();}
 }

@@ -26,6 +26,12 @@ public class ItemController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
+    @PostMapping("/{itemId}/approve")
+    public ResponseEntity<ItemResponseDto> approveItem(@PathVariable Long itemId, @RequestParam boolean approve) {
+        ItemResponseDto responseDto = itemService.approveItem(itemId, approve);
+        return ResponseEntity.ok(responseDto);
+    }
+
     @PutMapping("/{itemId}")
     public ResponseEntity<ItemResponseDto> updateItem(@PathVariable Long itemId, @RequestBody ItemRequestDto requestDto) {
         ItemResponseDto updateItem = itemService.updateItem(itemId, requestDto);

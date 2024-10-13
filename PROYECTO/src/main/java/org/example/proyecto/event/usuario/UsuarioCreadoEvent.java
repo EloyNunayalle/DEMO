@@ -1,4 +1,4 @@
-package org.example.proyecto.event;
+package org.example.proyecto.event.usuario;
 
 import lombok.Getter;
 import org.example.proyecto.Usuario.Domain.Usuario;

@@ -40,7 +40,7 @@ public class RatingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<RatingResponseDto> deleteRating(@PathVariable Long ratingId) {
+    public ResponseEntity<RatingResponseDto> deleteRating(@PathVariable("id") Long ratingId) {
         ratingService.deleteItem(ratingId);
         return ResponseEntity.noContent().build();
     }

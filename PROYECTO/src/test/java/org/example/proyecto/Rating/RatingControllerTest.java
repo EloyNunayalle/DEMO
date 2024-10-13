@@ -86,7 +86,7 @@ public class RatingControllerTest {
     @Test
     @WithMockUser
     public void testDeleteRating() throws Exception {
-        mockMvc.perform(delete("/ratings/{ratingId}", 1L)
+        mockMvc.perform(delete("/ratings/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }

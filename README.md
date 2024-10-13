@@ -33,7 +33,7 @@ En un mundo cada vez más preocupado por los efectos del consumismo desmedido, e
 ## Identificación del Problema o Necesidad
 
 ### Descripción del Problema
-El sistema busca resolver la necesidad de eficiencia y precisión en la toma de pedidos, a la vez que mantiene el contacto personal entre el mesero y el cliente. La intervención del mesero sigue siendo clave, ya que es quien recibe a los clientes, ofrece la atención durante su estancia y entrega los pedidos. Al mismo tiempo, la implementación de un sistema de evaluación mediante códigos QR permite al administrador recopilar comentarios precisos sobre el desempeño de cada mesero, incentivando la mejora continua y asegurando una experiencia de calidad para los clientes.
+El sistema busca resolver la necesidad de una plataforma eficiente y segura para el intercambio de bienes entre usuarios sin involucrar dinero. En un contexto donde el consumismo y el desperdicio de objetos es una preocupación creciente, muchas personas prefieren intercambiar productos que ya no necesitan por aquellos que les son útiles. Sin embargo, los intercambios tradicionales enfrentan desafíos como la falta de confianza entre las partes, la dificultad para coordinar envíos y la falta de un sistema formal de retroalimentación sobre la calidad del intercambio.
 
 ### Justificación
 El aumento del consumismo ha generado la necesidad de explorar alternativas más sostenibles. Muchos productos en buen estado pierden su valor en el mercado tradicional, mientras que otras personas podrían necesitarlos. MarketExchange ofrece una plataforma digital que facilita el trueque directo entre usuarios, permitiendo intercambiar productos sin dinero de por medio, fomentando así una economía circular.

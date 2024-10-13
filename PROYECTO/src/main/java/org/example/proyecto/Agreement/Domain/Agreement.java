@@ -25,9 +25,7 @@
         @Enumerated(EnumType.STRING)
         private Status status;
     
-        @NotNull(message = "La fecha de intercambio no puede ser nula")
-        @FutureOrPresent(message = "La fecha de intercambio debe ser en el presente o futuro")
-        private LocalDateTime tradeDate;
+
 
         @OneToOne(mappedBy = "agreement", cascade = CascadeType.ALL)
         private Shipment shipment;

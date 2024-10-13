@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/item/**").hasAuthority("USER")
                         .requestMatchers("/item/category/**").hasAuthority("USER")
                         .requestMatchers("/item/user/**").hasAuthority("USER")
-                        .requestMatchers("/item/items/mine").hasAuthority("USER")
+                        .requestMatchers("/item/mine").hasAuthority("USER")
 
 
                         // Configuración de acceso a categorías

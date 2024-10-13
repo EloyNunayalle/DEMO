@@ -84,6 +84,8 @@ public class AuthenticationService {
         JwtAuthResponse response = new JwtAuthResponse();
         response.setToken(jwtService.generateToken(newUser));
         return response;
+
+        //a
     }
 }
 

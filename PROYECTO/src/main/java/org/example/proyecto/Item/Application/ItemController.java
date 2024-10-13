@@ -67,7 +67,7 @@ public class ItemController {
         return ResponseEntity.ok(items);
     }
 
-    @GetMapping("/items/mine")
+    @GetMapping("/mine")
     public ResponseEntity<List<ItemResponseDto>> getUserItems() {
         List<ItemResponseDto> items = itemService.getUserItems();
         return ResponseEntity.ok(items);

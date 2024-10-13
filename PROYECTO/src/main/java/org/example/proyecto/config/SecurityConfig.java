@@ -42,21 +42,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
 
-                        // Acceso de ADMIN
-                        .requestMatchers("/item/**").hasAuthority("ADMIN")
-                        .requestMatchers("/category/**").hasAuthority("ADMIN")
-                        .requestMatchers("/usuarios/**").hasAuthority("ADMIN")
-                        .requestMatchers("/shipments/**").hasAuthority("ADMIN")
-                        .requestMatchers("/agreements/**").hasAuthority("ADMIN")
-                        .requestMatchers("/ratings/**").hasAuthority("ADMIN")
 
                         // Permitir a los usuarios acceso a sus propios ítems
                         .requestMatchers(HttpMethod.POST, "/item").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/item/**").hasAuthority("USER")
                         .requestMatchers(HttpMethod.DELETE, "/item/**").hasAuthority("USER")
-                        .requestMatchers("/item/category/**").hasAuthority("USER")
-                        .requestMatchers("/item/user/**").hasAuthority("USER")
-                        .requestMatchers("/item/mine").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/item/category/{categoryId}").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/item/user/{userId}").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/item/mine").hasAuthority("USER")
+                        .requestMatchers(HttpMethod.GET, "/item/{id}").hasAuthority("USER")
 
 
                         // Configuración de acceso a categorías
@@ -73,7 +67,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/agreements/{id}/accept").hasAuthority("USER")
                         .requestMatchers(HttpMethod.PUT, "/agreements/{id}/reject").hasAuthority("USER")
 
-                        .requestMatchers("/usuarios/me").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/usuarios/me").hasAuthority("USER")
+
+
+                        // Acceso de ADMIN
+                        .requestMatchers("/item/**").hasAuthority("ADMIN")
+                        .requestMatchers("/category/**").hasAuthority("ADMIN")
+                        .requestMatchers("/usuarios/**").hasAuthority("ADMIN")
+                        .requestMatchers("/shipments/**").hasAuthority("ADMIN")
+                        .requestMatchers("/agreements/**").hasAuthority("ADMIN")
+                        .requestMatchers("/ratings/**").hasAuthority("ADMIN")
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())

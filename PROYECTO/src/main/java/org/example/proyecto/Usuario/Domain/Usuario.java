@@ -8,6 +8,7 @@ import org.example.proyecto.Agreement.Domain.Agreement;
 
 
 import org.example.proyecto.Rating.Domain.Rating;
+import javax.validation.constraints.Pattern;
 
 
 import javax.validation.constraints.Email;
@@ -40,7 +41,7 @@ public class Usuario {
 
 
     @NotNull
-
+    @Pattern(regexp = "^\\+?[0-9. ()-]{7,15}$", message = "El teléfono debe tener un formato válido")
     @Size(min = 7, max = 15, message = "El teléfono debe tener entre 7 y 15 dígitos")
     private String phone;
 

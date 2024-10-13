@@ -10,6 +10,11 @@ import org.example.proyecto.exception.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -111,5 +116,44 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario con ID " + id + " no encontrado"));
         usuarioRepository.delete(usuario);
     }
+
+    public Usuario findByEmail(String username, String role) {
+        Usuario user = usuarioRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User nottt found"));
+
+        return user;
+    }
+
+
+    public UsuarioResponseDto getUsuarioOwnInfo() {
+        // Obtener el principal del contexto de seguridad (usuario autenticado)
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String email;
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails) principal).getUsername();  // Obtener el email del principal
+        } else {
+            throw new InvalidUserFieldException("No autorizado para esta operación");
+        }
+
+        // Buscar al usuario en la base de datos utilizando el email
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        // Devolver la información del usuario mapeada al DTO de respuesta
+        return modelMapper.map(usuario, UsuarioResponseDto.class);
+    }
+
+
+    @Bean(name = "UserDetailsService")
+    public UserDetailsService userDetailsService() {
+        return username -> {
+            Usuario user = usuarioRepository
+                    .findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            return (UserDetails) user;
+        };
+    }
+
+
 }
 

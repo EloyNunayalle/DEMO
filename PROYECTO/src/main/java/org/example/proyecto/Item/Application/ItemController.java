@@ -60,4 +60,10 @@ public class ItemController {
         List<ItemResponseDto> items = itemService.getItemsByUser(userId);
         return ResponseEntity.ok(items);
     }
+
+    @GetMapping("/items/mine")
+    public ResponseEntity<List<ItemResponseDto>> getUserItems() {
+        List<ItemResponseDto> items = itemService.getUserItems();
+        return ResponseEntity.ok(items);
+    }
 }

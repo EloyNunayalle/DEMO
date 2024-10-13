@@ -8,6 +8,10 @@ import org.example.proyecto.Agreement.Domain.Agreement;
 
 
 import org.example.proyecto.Rating.Domain.Rating;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.validation.constraints.Pattern;
 
 
@@ -15,12 +19,13 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,6 +78,22 @@ public class Usuario {
 
     @OneToMany(mappedBy = "recipient")
     private List<Agreement> receivedAgreements;
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name())); // Ajusta según cómo manejas los roles
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 
     @PrePersist
     protected void onCreate() {

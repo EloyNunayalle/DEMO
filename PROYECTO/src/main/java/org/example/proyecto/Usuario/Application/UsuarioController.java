@@ -58,4 +58,10 @@ public class UsuarioController {
         usuarioService.eliminarUsuario(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponseDto> getMyInfo() {
+        UsuarioResponseDto usuarioInfo = usuarioService.getUsuarioOwnInfo();
+        return ResponseEntity.ok(usuarioInfo);
+    }
 }

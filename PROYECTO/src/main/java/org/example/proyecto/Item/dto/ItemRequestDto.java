@@ -9,15 +9,19 @@ import org.example.proyecto.Usuario.Domain.Usuario;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class ItemRequestDto {
-    @NotBlank(message = "El nombre no puede estar vacio")
+
+    @NotBlank(message = "El nombre no puede estar vacío")
+    @Size(max = 100, message = "El nombre no puede tener más de 100 caracteres")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "La descripción no puede estar vacía")
+    @Size(max = 255, message = "La descripción no puede tener más de 255 caracteres")
     private String description;
 
     @NotNull
@@ -29,7 +33,5 @@ public class ItemRequestDto {
 
     @NotNull
     private Condition condition;
-
-
 
 }

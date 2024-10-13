@@ -192,6 +192,7 @@ public class AgreementService {
             throw new IllegalArgumentException("No se puede cambiar el estado de un acuerdo que ya ha sido ACCEPTED o REJECTED");
         }
 //sdfdsfds
+
         AgreementResponseDto responseDto = new AgreementResponseDto();
 
         modelMapper.map(existingAgreement, responseDto);

@@ -155,22 +155,50 @@ class ShipmentServiceTest {
 
     @Test
     public void testUpdateShipment() {
+        // Preparar los datos de prueba
         Shipment existingShipment = new Shipment();
+        existingShipment.setId(1L);
+        existingShipment.setInitiatorAddress("Old Initiator Address");
+        existingShipment.setReceiveAddress("Old Recipient Address");
+        existingShipment.setDeliveryDate(LocalDateTime.now());
+
         ShipmentRequestDto shipmentRequestDto = new ShipmentRequestDto();
-        Shipment updatedShipment = new Shipment();
-        ShipmentResponseDto shipmentResponseDto = new ShipmentResponseDto();
+        shipmentRequestDto.setInitiatorAddress("New Initiator Address");
+        shipmentRequestDto.setReceiveAddress("New Recipient Address");
+        shipmentRequestDto.setDeliveryDate(LocalDateTime.now().plusDays(7));
+        shipmentRequestDto.setAgreementId(1L);
 
-        when(shipmentRepository.findById(anyLong())).thenReturn(Optional.of(existingShipment));
-        when(shipmentRepository.save(any(Shipment.class))).thenReturn(updatedShipment);
-        when(modelMapper.map(updatedShipment, ShipmentResponseDto.class)).thenReturn(shipmentResponseDto);
+        Agreement agreement = new Agreement();
+        agreement.setId(1L);
 
+        // Simular el comportamiento de los repositorios y el mapeador
+        when(shipmentRepository.findById(1L)).thenReturn(Optional.of(existingShipment));
+        when(agreementRepository.findById(1L)).thenReturn(Optional.of(agreement));
+
+        // Asegúrate de que save() retorne el existingShipment actualizado
+        when(shipmentRepository.save(any(Shipment.class))).thenReturn(existingShipment);
+
+        // Simular la conversión del ModelMapper
+        ShipmentResponseDto responseDto = new ShipmentResponseDto();
+        responseDto.setId(1L);
+        responseDto.setInitiatorAddress("New Initiator Address");
+        responseDto.setReceiveAddress("New Recipient Address");
+
+        when(modelMapper.map(any(Shipment.class), eq(ShipmentResponseDto.class))).thenReturn(responseDto);
+
+        // Ejecutar el metodo que se va a probar
         ShipmentResponseDto result = shipmentService.updateShipment(1L, shipmentRequestDto);
 
+        // Verificar que el resultado no sea nulo
         assertNotNull(result);
-        verify(shipmentRepository, times(1)).findById(1L);
+        assertEquals("New Initiator Address", result.getInitiatorAddress());
+        assertEquals("New Recipient Address", result.getReceiveAddress());
+
+        // Verificar que se llamaron los métodos correctos en los repositorios
         verify(shipmentRepository, times(1)).save(any(Shipment.class));
-        verify(modelMapper, times(1)).map(updatedShipment, ShipmentResponseDto.class);
     }
+
+
 
     @Test
     public void testUpdateShipment_NotFound() {

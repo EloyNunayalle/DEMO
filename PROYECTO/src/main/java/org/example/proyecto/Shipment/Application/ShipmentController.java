@@ -11,6 +11,7 @@ import org.example.proyecto.Shipment.Dto.ShipmentResponseDto;
 import org.example.proyecto.Usuario.Domain.Usuario;
 import org.example.proyecto.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -57,7 +58,8 @@ public class ShipmentController {
 
     // Eliminar un envío por ID
     @DeleteMapping("/{id}")
-    public void deleteShipment(@PathVariable Long id) {
+    public ResponseEntity<ShipmentResponseDto> deleteShipment(@PathVariable Long id) {
         shipmentService.deleteShipment(id);
+        return ResponseEntity.noContent().build();
     }
 }

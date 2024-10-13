@@ -4,54 +4,63 @@ import org.example.proyecto.Item.Application.ItemController;
 import org.example.proyecto.Item.Domain.ItemService;
 import org.example.proyecto.Item.dto.ItemRequestDto;
 import org.example.proyecto.Item.dto.ItemResponseDto;
+import org.example.proyecto.Rating.Application.RatingController;
+import org.example.proyecto.config.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+@AutoConfigureMockMvc(addFilters = false)  // Deshabilitar filtros de seguridad en pruebas
+@WebMvcTest(ItemController.class)
 public class ItemControllerTest {
 
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
     private ItemService itemService;
 
-    @InjectMocks
-    private ItemController itemController;
+    @MockBean
+    private JwtService jwtService;  // Agrega el mock para JwtService
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
-    public void testCreateItem() {
+    public void testCreateItem() throws Exception {
         // Preparar datos
-        ItemRequestDto requestDto = new ItemRequestDto();
         ItemResponseDto responseDto = new ItemResponseDto();
         responseDto.setId(1L);
 
         // Simular comportamiento del servicio
-        when(itemService.createItem(requestDto)).thenReturn(responseDto);
+        when(itemService.createItem(any(ItemRequestDto.class))).thenReturn(responseDto);
 
-        // Ejecutar el controlador
-        ResponseEntity<ItemResponseDto> response = itemController.createItem(requestDto);
+        // Realizar la solicitud POST y verificar la respuesta
+        mockMvc.perform(post("/item")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"category_id\": 1, \"user_id\": 1}"))  // JSON simulado del DTO de request
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L));
 
-        // Verificaciones
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1L, response.getBody().getId());
+        // Verificar que el servicio fue llamado
+        verify(itemService, times(1)).createItem(any(ItemRequestDto.class));
     }
 
     @Test
-    public void testApproveItem() {
+    public void testApproveItem() throws Exception {
         // Preparar datos
         ItemResponseDto responseDto = new ItemResponseDto();
         responseDto.setId(1L);
@@ -59,36 +68,38 @@ public class ItemControllerTest {
         // Simular comportamiento del servicio
         when(itemService.approveItem(1L, true)).thenReturn(responseDto);
 
-        // Ejecutar el controlador
-        ResponseEntity<ItemResponseDto> response = itemController.approveItem(1L, true);
+        // Realizar la solicitud POST y verificar la respuesta
+        mockMvc.perform(post("/item/1/approve")
+                        .param("approve", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
 
-        // Verificaciones
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1L, response.getBody().getId());
+        // Verificar que el servicio fue llamado
+        verify(itemService, times(1)).approveItem(1L, true);
     }
 
     @Test
-    public void testUpdateItem() {
+    public void testUpdateItem() throws Exception {
         // Preparar datos
-        ItemRequestDto requestDto = new ItemRequestDto();
         ItemResponseDto responseDto = new ItemResponseDto();
         responseDto.setId(1L);
 
         // Simular comportamiento del servicio
-        when(itemService.updateItem(1L, requestDto)).thenReturn(responseDto);
+        when(itemService.updateItem(eq(1L), any(ItemRequestDto.class))).thenReturn(responseDto);
 
-        // Ejecutar el controlador
-        ResponseEntity<ItemResponseDto> response = itemController.updateItem(1L, requestDto);
+        // Realizar la solicitud PUT y verificar la respuesta
+        mockMvc.perform(put("/item/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"category_id\": 1, \"user_id\": 1}"))  // JSON simulado del DTO de request
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
 
-        // Verificaciones
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1L, response.getBody().getId());
+        // Verificar que el servicio fue llamado
+        verify(itemService, times(1)).updateItem(eq(1L), any(ItemRequestDto.class));
     }
 
     @Test
-    public void testGetItem() {
+    public void testGetItem() throws Exception {
         // Preparar datos
         ItemResponseDto responseDto = new ItemResponseDto();
         responseDto.setId(1L);
@@ -96,113 +107,117 @@ public class ItemControllerTest {
         // Simular comportamiento del servicio
         when(itemService.getItemById(1L)).thenReturn(responseDto);
 
-        // Ejecutar el controlador
-        ResponseEntity<ItemResponseDto> response = itemController.getItem(1L);
+        // Realizar la solicitud GET y verificar la respuesta
+        mockMvc.perform(get("/item/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
 
-        // Verificaciones
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1L, response.getBody().getId());
+        // Verificar que el servicio fue llamado
+        verify(itemService, times(1)).getItemById(1L);
     }
 
     @Test
-    public void testGetAllItems() {
+    public void testGetAllItems() throws Exception {
         // Preparar datos
         ItemResponseDto item1 = new ItemResponseDto();
         item1.setId(1L);
         ItemResponseDto item2 = new ItemResponseDto();
         item2.setId(2L);
-
         List<ItemResponseDto> items = Arrays.asList(item1, item2);
 
         // Simular comportamiento del servicio
         when(itemService.getAllItems()).thenReturn(items);
 
-        // Ejecutar el controlador
-        ResponseEntity<List<ItemResponseDto>> response = itemController.getAllItems();
+        // Realizar la solicitud GET y verificar la respuesta
+        mockMvc.perform(get("/item"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[1].id").value(2L));
 
-        // Verificaciones
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
+        // Verificar que el servicio fue llamado
+        verify(itemService, times(1)).getAllItems();
     }
 
     @Test
-    public void testDeleteItem() {
+    public void testDeleteItem() throws Exception {
         // Simular comportamiento del servicio
         doNothing().when(itemService).deleteItem(1L);
 
-        // Ejecutar el controlador
-        ResponseEntity<ItemResponseDto> response = itemController.deleteItem(1L);
+        // Realizar la solicitud DELETE y verificar la respuesta
+        mockMvc.perform(delete("/item/1"))
+                .andExpect(status().isNoContent());
 
-        // Verificaciones
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        // Verificar que el servicio fue llamado
         verify(itemService, times(1)).deleteItem(1L);
     }
 
     @Test
-    public void testGetItemsByCategory() {
+    public void testGetItemsByCategory() throws Exception {
         // Preparar datos
         ItemResponseDto item1 = new ItemResponseDto();
         item1.setId(1L);
         ItemResponseDto item2 = new ItemResponseDto();
         item2.setId(2L);
-
         List<ItemResponseDto> items = Arrays.asList(item1, item2);
 
         // Simular comportamiento del servicio
         when(itemService.getItemsByCategory(1L)).thenReturn(items);
 
-        // Ejecutar el controlador
-        ResponseEntity<List<ItemResponseDto>> response = itemController.getItemByCategory(1L);
+        // Realizar la solicitud GET y verificar la respuesta
+        mockMvc.perform(get("/item/category/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[1].id").value(2L));
 
-        // Verificaciones
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
+        // Verificar que el servicio fue llamado
+        verify(itemService, times(1)).getItemsByCategory(1L);
     }
 
     @Test
-    public void testGetItemsByUser() {
+    public void testGetItemsByUser() throws Exception {
         // Preparar datos
         ItemResponseDto item1 = new ItemResponseDto();
         item1.setId(1L);
         ItemResponseDto item2 = new ItemResponseDto();
         item2.setId(2L);
-
         List<ItemResponseDto> items = Arrays.asList(item1, item2);
 
         // Simular comportamiento del servicio
         when(itemService.getItemsByUser(1L)).thenReturn(items);
 
-        // Ejecutar el controlador
-        ResponseEntity<List<ItemResponseDto>> response = itemController.getItemByUserId(1L);
+        // Realizar la solicitud GET y verificar la respuesta
+        mockMvc.perform(get("/item/user/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[1].id").value(2L));
 
-        // Verificaciones
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
+        // Verificar que el servicio fue llamado
+        verify(itemService, times(1)).getItemsByUser(1L);
     }
 
     @Test
-    public void testGetUserItems() {
+    public void testGetUserItems() throws Exception {
         // Preparar datos
         ItemResponseDto item1 = new ItemResponseDto();
         item1.setId(1L);
         ItemResponseDto item2 = new ItemResponseDto();
         item2.setId(2L);
-
         List<ItemResponseDto> items = Arrays.asList(item1, item2);
 
         // Simular comportamiento del servicio
         when(itemService.getUserItems()).thenReturn(items);
 
-        // Ejecutar el controlador
-        ResponseEntity<List<ItemResponseDto>> response = itemController.getUserItems();
+        // Realizar la solicitud GET y verificar la respuesta
+        mockMvc.perform(get("/item/mine"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[1].id").value(2L));
 
-        // Verificaciones
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
+        // Verificar que el servicio fue llamado
+        verify(itemService, times(1)).getUserItems();
     }
 }

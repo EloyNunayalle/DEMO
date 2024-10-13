@@ -4,14 +4,16 @@ import org.example.proyecto.Usuario.Application.UsuarioController;
 import org.example.proyecto.Usuario.Domain.UsuarioService;
 import org.example.proyecto.Usuario.dto.UsuarioRequestDto;
 import org.example.proyecto.Usuario.dto.UsuarioResponseDto;
+import org.example.proyecto.config.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
@@ -23,23 +25,22 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+@AutoConfigureMockMvc(addFilters = false)  // Deshabilitar filtros de seguridad en pruebas
+@WebMvcTest(UsuarioController.class)
 public class UsuarioControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    @MockBean
     private UsuarioService usuarioService;
 
-    @InjectMocks
-    private UsuarioController usuarioController;
+    @MockBean
+    private JwtService jwtService;  // Si tu aplicación utiliza JWT para autenticación, asegúrate de mockearlo
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(usuarioController).build();
-    }
 
     @Test
     public void testObtenerUsuarioPorId() throws Exception {

@@ -116,13 +116,14 @@ public class AgreementService {
         Agreement agreement = agreementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Agreement not found"));
 
+        //seteo manual
         AgreementResponseDto responseDto = new AgreementResponseDto();
-
-        modelMapper.map(agreement, responseDto); // mapeo general
-        responseDto.setItemFinName(agreement.getItem_fin().getName()); // ajustes manuales
+        responseDto.setId(agreement.getId());
+        responseDto.setState(agreement.getState());
         responseDto.setItemIniName(agreement.getItem_ini().getName());
-        responseDto.setUserNameFin(agreement.getRecipient().getEmail());
+        responseDto.setItemFinName(agreement.getItem_fin().getName());
         responseDto.setUserNameIni(agreement.getInitiator().getEmail());
+        responseDto.setUserNameFin(agreement.getRecipient().getEmail());
 
         return responseDto;
     }

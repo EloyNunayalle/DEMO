@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Nuevo Acuerdo Creado</title>
+    <title>Solicitud de Intercambio Enviada</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,12 +27,10 @@
 </head>
 <body>
 <div class="container">
-    <h1>¡Nuevo Acuerdo Creado!</h1>
-    <p>Hola,</p>
-    <p>Un nuevo acuerdo ha sido creado en MarketExchange.</p>
-    <p><strong>Objeto ofrecido por el iniciador:</strong> <span th:text="${itemIniName}">Nombre del objeto inicial</span></p>
-    <p><strong>Objeto ofrecido por el receptor:</strong> <span th:text="${itemFinName}">Nombre del objeto final</span></p>
-    <p>Por favor, visita <a href="https://marketexchange.com">MarketExchange</a> para más detalles.</p>
+    <h1>¡Solicitud Enviada!</h1>
+    <p>Has enviado una solicitud de intercambio a <span th:text="${recipientEmail}">Email del receptor</span> para intercambiar el siguiente producto:</p>
+    <p><strong>Tu producto:</strong> <span th:text="${itemIniName}">Nombre del producto</span></p>
+    <p><strong>Producto que deseas:</strong> <span th:text="${itemFinName}">Nombre del producto</span></p>
 </div>
 </body>
 </html>

@@ -3,16 +3,15 @@ package org.example.proyecto.Usuario.Domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import javax.validation.constraints.NotNull;
+
+import javax.validation.constraints.*;
+
 import org.example.proyecto.Agreement.Domain.Agreement;
 
 
 import org.example.proyecto.Rating.Domain.Rating;
 
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,7 +39,6 @@ public class Usuario {
 
 
     @NotNull
-    @Pattern(regexp = "^\\+?[0-9. ()-]{7,15}$", message = "El teléfono debe tener un formato válido")
     @Size(min = 7, max = 15, message = "El teléfono debe tener entre 7 y 15 dígitos")
     private String phone;
 

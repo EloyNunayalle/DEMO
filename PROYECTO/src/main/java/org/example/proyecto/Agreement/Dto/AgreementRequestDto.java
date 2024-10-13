@@ -9,7 +9,6 @@ import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-
 @Getter
 @Setter
 public class AgreementRequestDto {
@@ -17,9 +16,6 @@ public class AgreementRequestDto {
     @NotNull(message = "El estado no puede ser nulo")
     private Status status;
 
-    @NotNull(message = "La fecha de intercambio no puede ser nula")
-    @FutureOrPresent(message = "La fecha de intercambio debe ser en el presente o futuro")
-    private LocalDateTime tradeDate;
 
     @NotNull(message = "El objeto ofrecido por el iniciador no puede ser nulo")
     private Long itemIniId;
